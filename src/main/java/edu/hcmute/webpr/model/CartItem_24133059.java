@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 /**
  * Một dòng trong giỏ hàng.
  *
- * Tên sách, giá và ảnh bìa được chép lại lúc bỏ vào giỏ nên giỏ hàng vẫn hiển
- * thị được dù sau đó admin có sửa sách. {@code stock} là số tồn kho đọc từ
+ * Tên sách, giá và ảnh bìa được đọc lại khi cập nhật/xem giỏ và trước khi
+ * đặt hàng; chỉ hóa đơn đã đặt mới giữ giá lúc mua. {@code stock} là số tồn kho đọc từ
  * {@code books.quantity}, dùng để chặn tăng số lượng vượt quá hàng đang có.
  *
  * Trần Minh Thọ - 24133059

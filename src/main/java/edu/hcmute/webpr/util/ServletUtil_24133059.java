@@ -97,12 +97,14 @@ public final class ServletUtil_24133059 {
      */
     public static Cart_24133059 cart(HttpServletRequest req) {
         HttpSession session = req.getSession(true);
-        Object attr = session.getAttribute(Constants_24133059.SESSION_CART);
-        if (attr instanceof Cart_24133059 cart) {
+        synchronized (session) {
+            Object attr = session.getAttribute(Constants_24133059.SESSION_CART);
+            if (attr instanceof Cart_24133059 cart) {
+                return cart;
+            }
+            Cart_24133059 cart = new Cart_24133059();
+            session.setAttribute(Constants_24133059.SESSION_CART, cart);
             return cart;
         }
-        Cart_24133059 cart = new Cart_24133059();
-        session.setAttribute(Constants_24133059.SESSION_CART, cart);
-        return cart;
     }
 }

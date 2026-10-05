@@ -45,7 +45,7 @@ public class OrderDao_24133059 implements IOrderDao_24133059 {
         // cuốn cuối cùng thì người sau không update được dòng nào và cả đơn bị
         // huỷ bỏ, thay vì để tồn kho tụt xuống số âm.
         String reduceStock = "UPDATE books SET quantity = quantity - ? "
-                + "WHERE bookid = ? AND quantity >= ?";
+                + "WHERE bookid = ? AND quantity >= ? AND price = ?";
 
         Connection conn = null;
         try {
@@ -92,9 +92,11 @@ public class OrderDao_24133059 implements IOrderDao_24133059 {
                         psStock.setInt(1, detail.getQuantity());
                         psStock.setInt(2, detail.getBookId());
                         psStock.setInt(3, detail.getQuantity());
+                        psStock.setBigDecimal(4, detail.getPrice());
                         if (psStock.executeUpdate() == 0) {
                             throw new IllegalStateException("Sách \"" + detail.getTitle()
-                                    + "\" không còn đủ số lượng trong kho.");
+                                    + "\" đã thay đổi giá hoặc không còn đủ số lượng trong kho. "
+                                    + "Vui lòng kiểm tra lại giỏ hàng.");
                         }
                     }
                 }

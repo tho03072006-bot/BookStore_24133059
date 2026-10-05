@@ -23,41 +23,41 @@ public class Cart_24133059 implements Serializable {
     private final Map<Integer, CartItem_24133059> items = new LinkedHashMap<>();
 
     /** Các dòng trong giỏ, theo thứ tự đã thêm. */
-    public List<CartItem_24133059> getItems() {
+    public synchronized List<CartItem_24133059> getItems() {
         return new ArrayList<>(items.values());
     }
 
-    public CartItem_24133059 find(int bookId) {
+    public synchronized CartItem_24133059 find(int bookId) {
         return items.get(bookId);
     }
 
-    public boolean contains(int bookId) {
+    public synchronized boolean contains(int bookId) {
         return items.containsKey(bookId);
     }
 
-    public void put(CartItem_24133059 item) {
+    public synchronized void put(CartItem_24133059 item) {
         items.put(item.getBookId(), item);
     }
 
-    public void remove(int bookId) {
+    public synchronized void remove(int bookId) {
         items.remove(bookId);
     }
 
-    public void clear() {
+    public synchronized void clear() {
         items.clear();
     }
 
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return items.isEmpty();
     }
 
     /** Số đầu sách khác nhau trong giỏ. */
-    public int getLineCount() {
+    public synchronized int getLineCount() {
         return items.size();
     }
 
     /** Tổng số cuốn, dùng cho con số nhỏ trên biểu tượng giỏ hàng. */
-    public int getTotalQuantity() {
+    public synchronized int getTotalQuantity() {
         int total = 0;
         for (CartItem_24133059 item : items.values()) {
             total += item.getQuantity();
@@ -66,7 +66,7 @@ public class Cart_24133059 implements Serializable {
     }
 
     /** Tổng tiền của cả giỏ. */
-    public BigDecimal getTotalAmount() {
+    public synchronized BigDecimal getTotalAmount() {
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem_24133059 item : items.values()) {
             total = total.add(item.getSubtotal());
@@ -75,7 +75,7 @@ public class Cart_24133059 implements Serializable {
     }
 
     /** Tổng tiền đã định dạng, ví dụ "160.000 ₫". */
-    public String getTotalAmountText() {
+    public synchronized String getTotalAmountText() {
         return edu.hcmute.webpr.util.MoneyUtil_24133059.format(getTotalAmount());
     }
 }

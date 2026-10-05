@@ -23,12 +23,33 @@ import edu.hcmute.webpr.util.Constants_24133059;
  */
 public class OrderService_24133059 implements IOrderService_24133059 {
 
-    private final IOrderDao_24133059 orderDao = new OrderDao_24133059();
-    private final ICartService_24133059 cartService = new CartService_24133059();
+    private final IOrderDao_24133059 orderDao;
+    private final ICartService_24133059 cartService;
+
+    public OrderService_24133059() {
+        this(new OrderDao_24133059(), new CartService_24133059());
+    }
+
+    OrderService_24133059(IOrderDao_24133059 orderDao, ICartService_24133059 cartService) {
+        this.orderDao = orderDao;
+        this.cartService = cartService;
+    }
 
     @Override
     public int placeCodOrder(User_24133059 buyer, Cart_24133059 cart, String receiverName,
                              String receiverPhone, String address, String note) {
+        if (cart == null) {
+            throw new IllegalArgumentException("Giỏ hàng đang trống.");
+        }
+        // Các request cùng Session dùng chung giỏ: chỉ một request được chốt
+        // đơn và xóa giỏ, request gửi đồng thời sẽ thấy giỏ đã trống.
+        synchronized (cart) {
+            return placeCodOrderLocked(buyer, cart, receiverName, receiverPhone, address, note);
+        }
+    }
+
+    private int placeCodOrderLocked(User_24133059 buyer, Cart_24133059 cart, String receiverName,
+                                   String receiverPhone, String address, String note) {
 
         if (buyer == null) {
             throw new IllegalArgumentException("Bạn cần đăng nhập để đặt hàng.");

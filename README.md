@@ -192,6 +192,40 @@ cả hai nơi: thuộc tính `min`/`max` của ô nhập trên trình duyệt, v
 ở tầng Business (nơi quyết định thật sự). Đặt hàng xong thì tồn kho
 `books.quantity` bị trừ đi; hủy đơn thì được cộng trả lại.
 
+Giỏ đọc lại giá hiện tại khi xem/cập nhật và trước khi đặt hàng. Nếu giá hoặc
+số lượng khả dụng vừa thay đổi, khách được yêu cầu kiểm tra lại trước khi
+chốt COD. Hóa đơn đã đặt vẫn giữ tên và giá tại thời điểm mua. Các request
+thanh toán đồng thời cùng một giỏ chỉ tạo được một đơn.
+
+`05_seed_orders.sql` tạo dữ liệu mẫu trong transaction, trừ kho cho các đơn
+`NEW` đến `DELIVERED` và bỏ qua mẫu đã có bằng dấu `[DEMO_24133059]` trong ghi
+chú. Chạy lại script không xóa đơn thật và không trừ kho lần nữa. Script mới
+không tự chuyển đổi các đơn mẫu đã tạo bằng phiên bản cũ.
+
+### Kiểm thử các chức năng User
+
+Chạy 16 ca kiểm thử nghiệp vụ, không cần Tomcat hoặc SQL Server:
+
+```bash
+mvn test
+```
+
+Để chạy thêm 5 ca kiểm thử tích hợp, deploy WAR mới lên Tomcat cục bộ, kết
+nối database theo `database.properties`, rồi mở PowerShell:
+
+```powershell
+$env:BOOKSTORE_TEST_URL='http://localhost:8080/BookStore_24133059'
+mvn test
+Remove-Item Env:BOOKSTORE_TEST_URL
+```
+
+Database cần có schema `01_schema.sql` và `03_order_schema.sql`, tài khoản
+mẫu `mai@bookstore.local` từ `02_seed.sql`. Test tạo tài khoản/sách riêng,
+tự dọn các dòng thử; không cần chạy lại các script khởi tạo trên database
+đã dùng. Kết quả lần kiểm tra 05/10/2026: **21/21 ca đạt**, gồm COD, giỏ
+hàng, cả 8 trạng thái, phân trang và script đơn mẫu. Xem
+[báo cáo kiểm thử](docs/kiem-thu-user-2026-10-05.md).
+
 ---
 
 ## 4. Những chỗ đã cân nhắc kỹ

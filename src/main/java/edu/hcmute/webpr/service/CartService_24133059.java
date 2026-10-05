@@ -15,10 +15,24 @@ import edu.hcmute.webpr.util.Constants_24133059;
  */
 public class CartService_24133059 implements ICartService_24133059 {
 
-    private final IBookService_24133059 bookService = new BookService_24133059();
+    private final IBookService_24133059 bookService;
+
+    public CartService_24133059() {
+        this(new BookService_24133059());
+    }
+
+    CartService_24133059(IBookService_24133059 bookService) {
+        this.bookService = bookService;
+    }
 
     @Override
     public void addToCart(Cart_24133059 cart, int bookId, int quantity) {
+        synchronized (cart) {
+            addLocked(cart, bookId, quantity);
+        }
+    }
+
+    private void addLocked(Cart_24133059 cart, int bookId, int quantity) {
         if (quantity < 1) {
             throw new IllegalArgumentException("Số lượng phải từ 1 trở lên.");
         }
@@ -28,7 +42,7 @@ public class CartService_24133059 implements ICartService_24133059 {
         }
 
         CartItem_24133059 item = cart.find(bookId);
-        int newQuantity = (item == null) ? quantity : item.getQuantity() + quantity;
+        long newQuantity = (item == null) ? quantity : (long) item.getQuantity() + quantity;
         int limit = limitOf(book);
 
         if (limit <= 0) {
@@ -39,16 +53,17 @@ public class CartService_24133059 implements ICartService_24133059 {
                     + " cuốn \"" + book.getTitle() + "\".");
         }
 
-        if (item == null) {
-            cart.put(new CartItem_24133059(book, newQuantity));
-        } else {
-            item.setStock(book.getQuantity() == null ? 0 : book.getQuantity());
-            item.setQuantity(newQuantity);
-        }
+        cart.put(new CartItem_24133059(book, (int) newQuantity));
     }
 
     @Override
     public void updateQuantity(Cart_24133059 cart, int bookId, int quantity) {
+        synchronized (cart) {
+            updateLocked(cart, bookId, quantity);
+        }
+    }
+
+    private void updateLocked(Cart_24133059 cart, int bookId, int quantity) {
         CartItem_24133059 item = cart.find(bookId);
         if (item == null) {
             throw new IllegalArgumentException("Cuốn sách này không có trong giỏ hàng.");
@@ -70,25 +85,34 @@ public class CartService_24133059 implements ICartService_24133059 {
                     + " cuốn \"" + book.getTitle() + "\".");
         }
 
-        item.setStock(book.getQuantity() == null ? 0 : book.getQuantity());
-        item.setQuantity(quantity);
+        cart.put(new CartItem_24133059(book, quantity));
     }
 
     @Override
     public void removeFromCart(Cart_24133059 cart, int bookId) {
-        if (!cart.contains(bookId)) {
-            throw new IllegalArgumentException("Cuốn sách này không có trong giỏ hàng.");
+        synchronized (cart) {
+            if (!cart.contains(bookId)) {
+                throw new IllegalArgumentException("Cuốn sách này không có trong giỏ hàng.");
+            }
+            cart.remove(bookId);
         }
-        cart.remove(bookId);
     }
 
     @Override
     public void clear(Cart_24133059 cart) {
-        cart.clear();
+        synchronized (cart) {
+            cart.clear();
+        }
     }
 
     @Override
     public String refresh(Cart_24133059 cart) {
+        synchronized (cart) {
+            return refreshLocked(cart);
+        }
+    }
+
+    private String refreshLocked(Cart_24133059 cart) {
         List<String> notes = new ArrayList<>();
 
         for (CartItem_24133059 item : cart.getItems()) {
@@ -101,15 +125,21 @@ public class CartService_24133059 implements ICartService_24133059 {
             }
 
             int limit = limitOf(book);
-            item.setStock(book.getQuantity() == null ? 0 : book.getQuantity());
-
             if (limit <= 0) {
                 cart.remove(item.getBookId());
                 notes.add("\"" + item.getTitle() + "\" đã hết hàng nên được bỏ khỏi giỏ");
-            } else if (item.getQuantity() > limit) {
-                item.setQuantity(limit);
-                notes.add("\"" + item.getTitle() + "\" chỉ còn " + limit
-                        + " cuốn nên số lượng đã được giảm lại");
+            } else {
+                CartItem_24133059 updated = new CartItem_24133059(book,
+                        Math.min(item.getQuantity(), limit));
+                if (item.getPrice().compareTo(updated.getPrice()) != 0) {
+                    notes.add("Giá của \"" + book.getTitle() + "\" đã thay đổi thành "
+                            + updated.getPriceText());
+                }
+                if (item.getQuantity() > limit) {
+                    notes.add("\"" + item.getTitle() + "\" chỉ còn " + limit
+                            + " cuốn nên số lượng đã được giảm lại");
+                }
+                cart.put(updated);
             }
         }
 

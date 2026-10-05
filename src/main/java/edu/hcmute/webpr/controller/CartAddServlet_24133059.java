@@ -32,7 +32,7 @@ public class CartAddServlet_24133059 extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         int bookId = ServletUtil_24133059.intParam(req, "bookId", 0);
-        int quantity = ServletUtil_24133059.intParam(req, "quantity", 1);
+        int quantity = ServletUtil_24133059.intParam(req, "quantity", -1);
 
         try {
             cartService.addToCart(ServletUtil_24133059.cart(req), bookId, quantity);
