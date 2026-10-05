@@ -132,6 +132,11 @@ public class Book_24133059 implements Serializable {
         this.averageRating = averageRating;
     }
 
+    /** Giá đã định dạng để hiển thị, ví dụ "95.000 ₫". */
+    public String getPriceText() {
+        return price == null ? "" : edu.hcmute.webpr.util.MoneyUtil_24133059.format(price);
+    }
+
     /** publish_date dạng dd/MM/yyyy để hiển thị trên JSP. */
     public String getPublishDateText() {
         return publishDate == null ? ""

@@ -27,9 +27,16 @@ public final class Constants_24133059 {
     /** Câu 2: số phút mã OTP còn hiệu lực kể từ lúc gửi. */
     public static final int OTP_EXPIRY_MINUTES = 5;
 
-    /** Thư mục vật lý lưu ảnh bìa do admin tải lên (nằm NGOÀI project để
-     *  không bị xoá mỗi lần build lại file .war). */
-    public static final String UPLOAD_DIR = "D:\\WEB\\uploads\\BookStore_24133059";
+    /**
+     * Thư mục vật lý lưu ảnh bìa do admin tải lên. Để NGOÀI project để ảnh
+     * không bị xoá mỗi lần build lại file .war.
+     *
+     * Đường dẫn dựng từ thư mục người dùng của chính máy đang chạy
+     * (ví dụ {@code C:\Users\<tên>\BookStore_24133059_uploads}) chứ không
+     * viết cứng ổ D:, nhờ vậy máy nào không có ổ D: vẫn chạy được.
+     */
+    public static final String UPLOAD_DIR =
+            System.getProperty("user.home") + java.io.File.separator + "BookStore_24133059_uploads";
 
     /** Thư mục ảnh bìa mẫu nằm sẵn trong webapp. */
     public static final String COVER_DIR_IN_WEBAPP = "/assets/covers/";

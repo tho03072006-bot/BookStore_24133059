@@ -21,6 +21,8 @@ Mở SQL Server Management Studio, chạy lần lượt:
 2. `database/02_seed.sql` — thêm dữ liệu mẫu: 5 tác giả, 50 cuốn sách, 4 tài khoản, 20 review.
 3. `database/03_order_schema.sql` — thêm 2 bảng `orders` và `order_detail` cho
    chức năng giỏ hàng / đặt hàng COD / lịch sử đơn hàng.
+4. `database/05_seed_orders.sql` — tạo sẵn 8 đơn hàng mẫu, mỗi đơn một trạng
+   thái, để mở trang "Đơn hàng của tôi" là bấm thử được ngay cả 8 bộ lọc.
 
 Hoặc chạy bằng dòng lệnh:
 
@@ -34,16 +36,24 @@ sqlcmd -S localhost,1433 -U sa -P <mat_khau> -C -f 65001 -i database/02_seed.sql
 
 ### Bước 2 — Sửa thông tin kết nối
 
-Mở `src/main/java/edu/hcmute/webpr/dao/JDBCConnect_24133059.java` và sửa
-`SERVER_NAME`, `PORT_NUMBER`, `USER_ID`, `PASSWORD` cho khớp máy đang chạy.
-Chạy riêng class này (*Run As → Java Application*) để thử kết nối trước.
+Mở `src/main/resources/database.properties` và sửa `db.server`, `db.port`,
+`db.name`, `db.user`, `db.password` cho khớp máy đang chạy. **Không cần sửa
+code Java rồi build lại.**
 
-### Bước 3 — Cấu hình gửi mail OTP (Câu 2)
+Thử kết nối trước khi chạy web: chuột phải
+`src/main/java/edu/hcmute/webpr/dao/JDBCConnect_24133059.java` →
+*Run As → Java Application*. Console in ra `Kết nối SQL Server thành công!`
+là đã thông.
 
-Chép `src/main/resources/email.properties.example` thành `email.properties`
-rồi điền tài khoản SMTP (Gmail thì dùng **App Password** 16 ký tự, không dùng
-mật khẩu Gmail thường). File `email.properties` đã được `.gitignore` nên mật
-khẩu không bị đẩy lên GitHub.
+### Bước 3 — Gửi mail OTP (Câu 2)
+
+`src/main/resources/email.properties` đã điền sẵn tài khoản SMTP nên chạy là
+gửi được mã OTP thật, không phải cấu hình thêm gì.
+
+Muốn đổi sang hộp thư khác thì xem hướng dẫn lấy **App Password** của Gmail
+trong `email.properties.example`. Để trống hai dòng `mail.username` và
+`mail.password` thì chương trình vẫn chạy bình thường, mã OTP chỉ chuyển sang
+**in ra Console của Tomcat** thay vì gửi qua email.
 
 > Nếu để trống, chương trình vẫn chạy bình thường: mã OTP sẽ được **in ra Console
 > của Tomcat** thay vì gửi qua email.
@@ -192,6 +202,13 @@ cột `varchar` mà đề quy định vẫn lưu được tiếng Việt có d�
 LOB cũ (`text`, `ntext`) nằm trong database UTF-8 (lỗi 4188). `VARCHAR(MAX)` chính là
 kiểu thay thế mà Microsoft khuyến nghị cho `text`. Các cột còn lại giữ nguyên 100% tên
 và kiểu như trong đề.
+
+**Giá lưu theo đơn vị nghìn đồng.** Đề quy định `books.price` kiểu `decimal(6,2)`, trần
+chỉ 9999.99 — không đủ chứa giá sách tính bằng đồng (một cuốn 95.000đ đã vượt trần). Vì
+không được sửa cấu trúc bảng, giá trị trong cột được hiểu là **nghìn đồng**: `95.00` hiển
+thị thành `95.000 ₫`, `78.50` thành `78.500 ₫`, trần 9999.99 tương đương 9.999.990 ₫.
+Toàn bộ việc quy đổi và định dạng nằm ở `util/MoneyUtil_24133059.java`; form thêm/sửa
+sách ghi rõ đơn vị ngay cạnh ô nhập.
 
 **Mật khẩu băm MD5.** Cột `passwd` đề quy định `varchar(32)` — vừa đúng 32 ký tự hex của
 MD5. BCrypt (60 ký tự) hay SHA-256 (64 ký tự) sẽ không vừa cột.

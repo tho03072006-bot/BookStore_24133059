@@ -43,7 +43,11 @@
                 <tr><th>title</th><td><c:out value="${book.title}"/></td></tr>
                 <tr><th>isbn</th><td><c:out value="${book.isbn}"/></td></tr>
                 <tr><th>publisher</th><td><c:out value="${book.publisher}"/></td></tr>
-                <tr><th>price</th><td><c:out value="${book.price}"/></td></tr>
+                <tr>
+                    <th>price</th>
+                    <td><c:out value="${book.price}"/>
+                        <span class="muted">(nghìn đồng) = <strong>${book.priceText}</strong></span></td>
+                </tr>
                 <tr><th>publish_date</th><td>${book.publishDateText}</td></tr>
                 <tr><th>quantity</th><td><c:out value="${book.quantity}"/></td></tr>
                 <tr><th>cover_image</th><td><c:out value="${book.coverImage}"/></td></tr>

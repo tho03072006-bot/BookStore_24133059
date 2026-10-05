@@ -1,21 +1,21 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%--
-    CÂU 1 - DECORATOR cho VAI TRÒ ADMIN (áp dụng cho mọi URL /admin/*).
+    CÃ‚U 1 - DECORATOR cho VAI TRÃ’ ADMIN (Ã¡p dá»¥ng cho má»i URL /admin/*).
 
-    Khác decorator của User ở chỗ có thêm dải menu con của khu vực quản trị và
-    nhãn nhắc người dùng biết đang đứng trong Trang quản trị.
+    KhÃ¡c decorator cá»§a User á»Ÿ chá»— cÃ³ thÃªm dáº£i menu con cá»§a khu vá»±c quáº£n trá»‹ vÃ 
+    nhÃ£n nháº¯c ngÆ°á»i dÃ¹ng biáº¿t Ä‘ang Ä‘á»©ng trong Trang quáº£n trá»‹.
 
-    Đề số 02 - Trần Minh Thọ - 24133059
+    Äá» sá»‘ 02 - Tráº§n Minh Thá» - 24133059
 --%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><sitemesh:write property='title'/> &ndash; Quản trị BookStore 24133059</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/style.css?v=5">
+    <title><sitemesh:write property='title'/> &ndash; Quáº£n trá»‹ BookStore 24133059</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/style.css?v=6">
     <script src="${pageContext.request.contextPath}/assets/app.js" defer></script>
     <sitemesh:write property='head'/>
 </head>
@@ -28,12 +28,12 @@
 
         <div class="card" style="padding:12px 18px;">
             <div class="actions">
-                <span class="muted">Trang quản trị &raquo;</span>
+                <span class="muted">Trang quáº£n trá»‹ &raquo;</span>
                 <a class="btn small ${uri eq '/admin/books' ? '' : 'secondary'}"
-                   href="${ctx}/admin/books">Quản lý Sách</a>
+                   href="${ctx}/admin/books">Quáº£n lÃ½ SÃ¡ch</a>
                 <a class="btn small ${uri eq '/admin/books/add' ? '' : 'secondary'}"
-                   href="${ctx}/admin/books/add">Thêm sách mới</a>
-                <a class="btn small secondary" href="${ctx}/home">Về trang người dùng</a>
+                   href="${ctx}/admin/books/add">ThÃªm sÃ¡ch má»›i</a>
+                <a class="btn small secondary" href="${ctx}/home">Vá» trang ngÆ°á»i dÃ¹ng</a>
             </div>
         </div>
 

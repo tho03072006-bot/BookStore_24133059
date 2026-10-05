@@ -1154,3 +1154,24 @@ input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="
         flex-basis: 33%;
     }
 }
+
+/* ------------------------------- GiÃ¡ tiá»n --------------------------- */
+
+.price-tag {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--cam);
+    letter-spacing: -.2px;
+}
+
+.field-list strong.price,
+strong.price {
+    font-size: 19px;
+    color: var(--cam);
+}
+
+.cart-table td,
+.order-line-money {
+    white-space: nowrap;
+}
+

@@ -3,7 +3,6 @@ package edu.hcmute.webpr.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +74,8 @@ public class Cart_24133059 implements Serializable {
         return total;
     }
 
-    Collection<CartItem_24133059> values() {
-        return items.values();
+    /** Tổng tiền đã định dạng, ví dụ "160.000 ₫". */
+    public String getTotalAmountText() {
+        return edu.hcmute.webpr.util.MoneyUtil_24133059.format(getTotalAmount());
     }
 }

@@ -63,7 +63,7 @@
                 <td><c:out value="${b.authorNames}"/></td>
                 <td><c:out value="${b.publisher}"/></td>
                 <td>${b.publishDateText}</td>
-                <td><c:out value="${b.price}"/></td>
+                <td>${b.priceText}</td>
                 <td><c:out value="${b.quantity}"/></td>
                 <td>${b.reviewCount}</td>
                 <td>

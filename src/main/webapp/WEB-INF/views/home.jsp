@@ -74,6 +74,8 @@
                         <a href="${ctx}/book?id=${b.bookId}"><c:out value="${b.title}"/></a>
                     </h3>
 
+                    <div class="price-tag">${b.priceText}</div>
+
                     <div class="field-list">
                         <div><span class="label">Mã isbn:</span> <c:out value="${b.isbn}"/></div>
                         <div><span class="label">Tác giả:</span> <c:out value="${b.authorNames}"/></div>
@@ -94,7 +96,7 @@
                                 <input type="hidden" name="bookId" value="${b.bookId}">
                                 <input type="hidden" name="quantity" value="1">
                                 <input type="hidden" name="returnUrl"
-                                       value="/home?author=${author.authorId}&page=${page.currentPage}#author-${author.authorId}">
+                                       value="/home?author=${author.authorId}&amp;page=${page.currentPage}#author-${author.authorId}">
                                 <button type="submit" class="btn small">Thêm vào giỏ</button>
                             </form>
                         </c:when>

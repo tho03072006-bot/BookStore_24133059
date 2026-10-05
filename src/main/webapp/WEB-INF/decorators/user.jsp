@@ -1,14 +1,14 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%--
-    CÂU 1 - DECORATOR cho VAI TRÒ USER.
+    CÃ‚U 1 - DECORATOR cho VAI TRÃ’ USER.
 
-    Mỗi trang nội dung trong /WEB-INF/views chỉ viết phần thân của nó; SiteMesh
-    Filter tự bọc file này ra ngoài. Thẻ <sitemesh:write> không phải taglib mà
-    là thẻ đặc biệt được SiteMesh thay thế sau khi JSP nội dung render xong.
+    Má»—i trang ná»™i dung trong /WEB-INF/views chá»‰ viáº¿t pháº§n thÃ¢n cá»§a nÃ³; SiteMesh
+    Filter tá»± bá»c file nÃ y ra ngoÃ i. Tháº» <sitemesh:write> khÃ´ng pháº£i taglib mÃ 
+    lÃ  tháº» Ä‘áº·c biá»‡t Ä‘Æ°á»£c SiteMesh thay tháº¿ sau khi JSP ná»™i dung render xong.
 
-    Đề số 02 - Trần Minh Thọ - 24133059
+    Äá» sá»‘ 02 - Tráº§n Minh Thá» - 24133059
 --%>
 <!DOCTYPE html>
 <html lang="vi">
@@ -16,7 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><sitemesh:write property='title'/> &ndash; BookStore 24133059</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/style.css?v=5">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/style.css?v=6">
     <script src="${pageContext.request.contextPath}/assets/app.js" defer></script>
     <sitemesh:write property='head'/>
 </head>

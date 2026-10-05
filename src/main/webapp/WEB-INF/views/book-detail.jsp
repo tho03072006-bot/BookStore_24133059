@@ -57,7 +57,7 @@
                 <div><span class="label">Publisher_date:</span> ${book.publishDateText}</div>
                 <div><span class="label">Quantity:</span> <c:out value="${book.quantity}"/></div>
                 <c:if test="${not empty book.price}">
-                    <div><span class="label">Giá:</span> <c:out value="${book.price}"/></div>
+                    <div><span class="label">Giá:</span> <strong class="price">${book.priceText}</strong></div>
                 </c:if>
                 <div>
                     <span class="review-count">Reviews (${book.reviewCount})</span>

@@ -70,12 +70,16 @@
             </div>
 
             <div class="form-row">
-                <label for="price">Giá</label>
+                <label for="price">Giá <span class="muted">(đơn vị: nghìn đồng)</span></label>
                 <input type="number" id="price" name="price" step="0.01" min="0" max="9999.99"
                        aria-invalid="${errorField eq 'price'}"
                        value="<c:out value='${book.price}'/>">
                 <c:if test="${errorField eq 'price'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
-                <div class="hint">Cột price kiểu decimal(6,2) nên tối đa 9999.99.</div>
+                <div class="hint">
+                    Nhập <code>95</code> nghĩa là <strong>95.000 &#8363;</strong>.
+                    Cột price kiểu decimal(6,2) nên tối đa 9999.99, tức 9.999.990 &#8363;.
+                    <c:if test="${not empty book.price}">Giá hiện tại: <strong>${book.priceText}</strong>.</c:if>
+                </div>
             </div>
         </div>
 

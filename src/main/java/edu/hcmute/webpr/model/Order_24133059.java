@@ -125,6 +125,11 @@ public class Order_24133059 implements Serializable {
         return orderDate == null ? "" : orderDate.format(DATE_TIME);
     }
 
+    /** Tổng tiền đã định dạng, ví dụ "160.000 ₫". */
+    public String getTotalAmountText() {
+        return edu.hcmute.webpr.util.MoneyUtil_24133059.format(totalAmount);
+    }
+
     /** Hình thức thanh toán viết đầy đủ cho người dùng dễ hiểu. */
     public String getPaymentMethodLabel() {
         return "COD".equalsIgnoreCase(paymentMethod)

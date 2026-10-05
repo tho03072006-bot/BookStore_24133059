@@ -123,7 +123,6 @@ public class OrderDao_24133059 implements IOrderDao_24133059 {
     public List<Order_24133059> findByUser(int userId, OrderStatus_24133059 status,
                                            int offset, int limit) {
         StringBuilder sql = new StringBuilder("SELECT ").append(ORDER_COLUMNS)
-                .append(", (SELECT COUNT(*) FROM order_detail d WHERE d.order_id = o.order_id) AS so_dong")
                 .append(" FROM orders o WHERE o.userid = ?");
         if (status != null) {
             sql.append(" AND o.status = ?");
@@ -191,7 +190,7 @@ public class OrderDao_24133059 implements IOrderDao_24133059 {
 
     @Override
     public Order_24133059 findByIdAndUser(int orderId, int userId) {
-        String sql = "SELECT " + ORDER_COLUMNS + ", 0 AS so_dong FROM orders o "
+        String sql = "SELECT " + ORDER_COLUMNS + " FROM orders o "
                 + "WHERE o.order_id = ? AND o.userid = ?";
         try (Connection conn = jdbc.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

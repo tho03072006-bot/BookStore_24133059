@@ -101,7 +101,8 @@ public class BookService_24133059 implements IBookService_24133059 {
                 throw new IllegalArgumentException("Giá không được là số âm.");
             }
             if (book.getPrice().compareTo(new java.math.BigDecimal("9999.99")) > 0) {
-                throw new IllegalArgumentException("Giá tối đa là 9999.99 (cột price kiểu decimal(6,2)).");
+                throw new IllegalArgumentException("Giá tối đa là 9999.99 nghìn đồng "
+                        + "(tức 9.999.990 đ) vì cột price kiểu decimal(6,2).");
             }
         }
     }

@@ -47,6 +47,8 @@
                 <a href="${ctx}/book?id=${b.bookId}"><c:out value="${b.title}"/></a>
             </h3>
 
+            <div class="price-tag">${b.priceText}</div>
+
             <div class="field-list">
                 <div><span class="label">Mã isbn:</span> <c:out value="${b.isbn}"/></div>
                 <div><span class="label">Tác giả:</span> <c:out value="${b.authorNames}"/></div>

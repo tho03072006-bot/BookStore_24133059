@@ -69,4 +69,12 @@ public class CartItem_24133059 implements Serializable {
     public BigDecimal getSubtotal() {
         return price.multiply(BigDecimal.valueOf(quantity));
     }
+
+    public String getPriceText() {
+        return edu.hcmute.webpr.util.MoneyUtil_24133059.format(price);
+    }
+
+    public String getSubtotalText() {
+        return edu.hcmute.webpr.util.MoneyUtil_24133059.format(getSubtotal());
+    }
 }
