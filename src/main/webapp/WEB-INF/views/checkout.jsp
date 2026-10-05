@@ -1,20 +1,20 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%--
-    THANH TOÃN COD - nháº­p thÃ´ng tin nháº­n hÃ ng rá»“i chá»‘t Ä‘Æ¡n.
-    Tráº§n Minh Thá» - 24133059
+    THANH TOÁN COD - nhập thông tin nhận hàng rồi chốt đơn.
+    Trần Minh Thọ - 24133059
 --%>
 <html>
 <head>
-    <title>Thanh toÃ¡n COD</title>
+    <title>Thanh toán COD</title>
 </head>
 <body>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <div class="page-title">
-    <h1>Thanh toÃ¡n</h1>
-    <a class="btn secondary" href="${ctx}/cart">&laquo; Quay láº¡i giá» hÃ ng</a>
+    <h1>Thanh toán</h1>
+    <a class="btn secondary" href="${ctx}/cart">&laquo; Quay lại giỏ hàng</a>
 </div>
 
 <c:if test="${not empty error}">
@@ -23,68 +23,68 @@
 
 <div class="checkout-grid">
 
-    <%-- ----------------------- ThÃ´ng tin nháº­n hÃ ng ----------------------- --%>
+    <%-- ----------------------- Thông tin nhận hàng ----------------------- --%>
     <div class="card">
-        <h2>ThÃ´ng tin nháº­n hÃ ng</h2>
+        <h2>Thông tin nhận hàng</h2>
 
         <form method="post" action="${ctx}/checkout">
 
             <div class="form-row">
-                <label for="receiverName">NgÆ°á»i nháº­n <span class="muted">(báº¯t buá»™c)</span></label>
+                <label for="receiverName">Người nhận <span class="muted">(bắt buộc)</span></label>
                 <input type="text" id="receiverName" name="receiverName" required maxlength="50"
-                       value="<c:out value='${receiverName}'/>" placeholder="Nguyá»…n VÄƒn A">
+                       value="<c:out value='${receiverName}'/>" placeholder="Nguyễn Văn A">
             </div>
 
             <div class="form-row">
-                <label for="receiverPhone">Sá»‘ Ä‘iá»‡n thoáº¡i <span class="muted">(báº¯t buá»™c)</span></label>
+                <label for="receiverPhone">Số điện thoại <span class="muted">(bắt buộc)</span></label>
                 <input type="tel" id="receiverPhone" name="receiverPhone" required
                        pattern="0[0-9]{9,10}" maxlength="11"
                        value="<c:out value='${receiverPhone}'/>" placeholder="0912345678">
-                <div class="hint">10 hoáº·c 11 chá»¯ sá»‘, báº¯t Ä‘áº§u báº±ng sá»‘ 0.</div>
+                <div class="hint">10 hoặc 11 chữ số, bắt đầu bằng số 0.</div>
             </div>
 
             <div class="form-row">
-                <label for="address">Äá»‹a chá»‰ nháº­n hÃ ng <span class="muted">(báº¯t buá»™c)</span></label>
+                <label for="address">Địa chỉ nhận hàng <span class="muted">(bắt buộc)</span></label>
                 <input type="text" id="address" name="address" required maxlength="200"
                        value="<c:out value='${address}'/>"
-                       placeholder="Sá»‘ nhÃ , Ä‘Æ°á»ng, phÆ°á»ng/xÃ£, quáº­n/huyá»‡n, tá»‰nh/thÃ nh">
+                       placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành">
             </div>
 
             <div class="form-row">
-                <label for="note">Ghi chÃº cho ngÆ°á»i giao hÃ ng</label>
+                <label for="note">Ghi chú cho người giao hàng</label>
                 <textarea id="note" name="note" maxlength="200"
-                          placeholder="VÃ­ dá»¥: giao giá» hÃ nh chÃ­nh"><c:out value="${note}"/></textarea>
+                          placeholder="Ví dụ: giao giờ hành chính"><c:out value="${note}"/></textarea>
             </div>
 
             <div class="form-row">
-                <label>HÃ¬nh thá»©c thanh toÃ¡n</label>
+                <label>Hình thức thanh toán</label>
                 <div class="payment-box">
                     <input type="radio" id="cod" name="paymentMethod" value="COD" checked>
                     <label for="cod">
-                        <strong>COD &ndash; Thanh toÃ¡n khi nháº­n hÃ ng</strong>
-                        <span class="hint">Báº¡n tráº£ tiá»n máº·t trá»±c tiáº¿p cho ngÆ°á»i giao hÃ ng.
-                            Cá»­a hÃ ng hiá»‡n chá»‰ há»— trá»£ hÃ¬nh thá»©c nÃ y.</span>
+                        <strong>COD &ndash; Thanh toán khi nhận hàng</strong>
+                        <span class="hint">Bạn trả tiền mặt trực tiếp cho người giao hàng.
+                            Cửa hàng hiện chỉ hỗ trợ hình thức này.</span>
                     </label>
                 </div>
             </div>
 
             <div class="actions">
-                <button type="submit" class="btn">Äáº·t hÃ ng</button>
-                <a class="btn secondary" href="${ctx}/cart">Huá»·</a>
+                <button type="submit" class="btn">Đặt hàng</button>
+                <a class="btn secondary" href="${ctx}/cart">Huỷ</a>
             </div>
         </form>
     </div>
 
-    <%-- --------------------------- TÃ³m táº¯t Ä‘Æ¡n --------------------------- --%>
+    <%-- --------------------------- Tóm tắt đơn --------------------------- --%>
     <div class="card">
-        <h2>ÄÆ¡n hÃ ng cá»§a báº¡n</h2>
+        <h2>Đơn hàng của bạn</h2>
 
         <table class="data">
             <thead>
             <tr>
-                <th scope="col">SÃ¡ch</th>
+                <th scope="col">Sách</th>
                 <th scope="col">SL</th>
-                <th scope="col">ThÃ nh tiá»n</th>
+                <th scope="col">Thành tiền</th>
             </tr>
             </thead>
             <tbody>
@@ -98,15 +98,15 @@
             </tbody>
             <tfoot>
             <tr>
-                <th scope="row" colspan="2">Tá»•ng cá»™ng</th>
+                <th scope="row" colspan="2">Tổng cộng</th>
                 <th>${cart.totalAmountText}</th>
             </tr>
             </tfoot>
         </table>
 
         <p class="hint" style="margin-top:12px;">
-            Äáº·t xong, Ä‘Æ¡n á»Ÿ tráº¡ng thÃ¡i <strong>ÄÆ¡n hÃ ng má»›i</strong>. Báº¡n theo dÃµi
-            tiáº¿n trÃ¬nh á»Ÿ má»¥c <a href="${ctx}/orders">ÄÆ¡n hÃ ng cá»§a tÃ´i</a>.
+            Đặt xong, đơn ở trạng thái <strong>Đơn hàng mới</strong>. Bạn theo dõi
+            tiến trình ở mục <a href="${ctx}/orders">Đơn hàng của tôi</a>.
         </p>
     </div>
 </div>

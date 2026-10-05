@@ -2,13 +2,13 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%--
-    CÃ‚U 1 - DECORATOR cho VAI TRÃ’ USER.
+    CÂU 1 - DECORATOR cho VAI TRÒ USER.
 
-    Má»—i trang ná»™i dung trong /WEB-INF/views chá»‰ viáº¿t pháº§n thÃ¢n cá»§a nÃ³; SiteMesh
-    Filter tá»± bá»c file nÃ y ra ngoÃ i. Tháº» <sitemesh:write> khÃ´ng pháº£i taglib mÃ 
-    lÃ  tháº» Ä‘áº·c biá»‡t Ä‘Æ°á»£c SiteMesh thay tháº¿ sau khi JSP ná»™i dung render xong.
+    Mỗi trang nội dung trong /WEB-INF/views chỉ viết phần thân của nó; SiteMesh
+    Filter tự bọc file này ra ngoài. Thẻ <sitemesh:write> không phải taglib mà
+    là thẻ đặc biệt được SiteMesh thay thế sau khi JSP nội dung render xong.
 
-    Äá» sá»‘ 02 - Tráº§n Minh Thá» - 24133059
+    Đề số 02 - Trần Minh Thọ - 24133059
 --%>
 <!DOCTYPE html>
 <html lang="vi">

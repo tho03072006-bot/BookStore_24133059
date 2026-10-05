@@ -1,27 +1,27 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%--
-    Lá»ŠCH Sá»¬ Äáº¶T HÃ€NG - danh sÃ¡ch Ä‘Æ¡n cá»§a ngÆ°á»i dÃ¹ng, Lá»ŒC THEO TRáº NG THÃI.
-    Má»—i tab lÃ  má»™t tráº¡ng thÃ¡i trong 08 tráº¡ng thÃ¡i Ä‘á» bÃ i yÃªu cáº§u.
-    Tráº§n Minh Thá» - 24133059
+    LỊCH SỬ ĐẶT HÀNG - danh sách đơn của người dùng, LỌC THEO TRẠNG THÁI.
+    Mỗi tab là một trạng thái trong 08 trạng thái đề bài yêu cầu.
+    Trần Minh Thọ - 24133059
 --%>
 <html>
 <head>
-    <title>ÄÆ¡n hÃ ng cá»§a tÃ´i</title>
+    <title>Đơn hàng của tôi</title>
 </head>
 <body>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <div class="page-title">
-    <h1>ÄÆ¡n hÃ ng cá»§a tÃ´i</h1>
-    <a class="btn secondary" href="${ctx}/products">Mua thÃªm sÃ¡ch</a>
+    <h1>Đơn hàng của tôi</h1>
+    <a class="btn secondary" href="${ctx}/products">Mua thêm sách</a>
 </div>
 
-<%-- -------------------------- Bá»™ lá»c tráº¡ng thÃ¡i -------------------------- --%>
-<nav class="status-filter" aria-label="Lá»c Ä‘Æ¡n hÃ ng theo tráº¡ng thÃ¡i">
+<%-- -------------------------- Bộ lọc trạng thái -------------------------- --%>
+<nav class="status-filter" aria-label="Lọc đơn hàng theo trạng thái">
     <a href="${ctx}/orders" class="chip ${empty currentStatus ? 'active' : ''}">
-        Táº¥t cáº£ <span class="chip-count">${totalAll}</span>
+        Tất cả <span class="chip-count">${totalAll}</span>
     </a>
     <c:forEach var="st" items="${statuses}">
         <a href="${ctx}/orders?status=${st.code}"
@@ -32,21 +32,21 @@
     </c:forEach>
 </nav>
 
-<%-- ---------------------------- Danh sÃ¡ch Ä‘Æ¡n ---------------------------- --%>
+<%-- ---------------------------- Danh sách đơn ---------------------------- --%>
 <c:choose>
     <c:when test="${empty result.items}">
         <div class="card" style="text-align:center;padding:36px 18px;">
             <c:choose>
                 <c:when test="${empty currentStatus}">
-                    <p style="font-size:17px;margin:0 0 6px;">Báº¡n chÆ°a cÃ³ Ä‘Æ¡n hÃ ng nÃ o.</p>
-                    <p class="muted" style="margin:0 0 18px;">Äáº·t thá»­ má»™t cuá»‘n Ä‘á»ƒ xem tiáº¿n trÃ¬nh Ä‘Æ¡n hÃ ng.</p>
-                    <a class="btn" href="${ctx}/products">Báº¯t Ä‘áº§u mua sáº¯m</a>
+                    <p style="font-size:17px;margin:0 0 6px;">Bạn chưa có đơn hàng nào.</p>
+                    <p class="muted" style="margin:0 0 18px;">Đặt thử một cuốn để xem tiến trình đơn hàng.</p>
+                    <a class="btn" href="${ctx}/products">Bắt đầu mua sắm</a>
                 </c:when>
                 <c:otherwise>
                     <p style="font-size:17px;margin:0 0 6px;">
-                        KhÃ´ng cÃ³ Ä‘Æ¡n nÃ o á»Ÿ tráº¡ng thÃ¡i &ldquo;${currentStatus.label}&rdquo;.
+                        Không có đơn nào ở trạng thái &ldquo;${currentStatus.label}&rdquo;.
                     </p>
-                    <a class="btn secondary" href="${ctx}/orders">Xem táº¥t cáº£ Ä‘Æ¡n</a>
+                    <a class="btn secondary" href="${ctx}/orders">Xem tất cả đơn</a>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -59,9 +59,9 @@
                 <div class="order-head">
                     <div>
                         <a class="order-code" href="${ctx}/orders/detail?id=${o.orderId}">
-                            ÄÆ¡n #${o.orderId}
+                            Đơn #${o.orderId}
                         </a>
-                        <span class="muted">&middot; Ä‘áº·t lÃºc ${o.orderDateText}</span>
+                        <span class="muted">&middot; đặt lúc ${o.orderDateText}</span>
                     </div>
                     <span class="badge st-${o.status.code}">${o.status.label}</span>
                 </div>
@@ -75,7 +75,7 @@
                                 </c:url>
                                 <img class="book-cover small" src="${coverUrl}"
                                      loading="lazy" decoding="async" width="50" height="70"
-                                     alt="BÃ¬a <c:out value='${d.title}'/>">
+                                     alt="Bìa <c:out value='${d.title}'/>">
                             </c:if>
                             <span class="order-line-title"><c:out value="${d.title}"/></span>
                             <span class="muted">&times; ${d.quantity}</span>
@@ -87,22 +87,22 @@
                 <div class="order-foot">
                     <div class="muted">${o.paymentMethodLabel}</div>
                     <div>
-                        Tá»•ng tiá»n:
+                        Tổng tiền:
                         <strong>${o.totalAmountText}</strong>
-                        <a class="btn small secondary" href="${ctx}/orders/detail?id=${o.orderId}">Xem chi tiáº¿t</a>
+                        <a class="btn small secondary" href="${ctx}/orders/detail?id=${o.orderId}">Xem chi tiết</a>
                     </div>
                 </div>
             </article>
         </c:forEach>
 
-        <%-- Giá»¯ nguyÃªn bá»™ lá»c khi chuyá»ƒn trang --%>
+        <%-- Giữ nguyên bộ lọc khi chuyển trang --%>
         <c:set var="filterQuery" value="${empty currentStatus ? '' : '&amp;status='.concat(currentStatus.code)}"/>
-        <nav class="pagination" aria-label="PhÃ¢n trang Ä‘Æ¡n hÃ ng">
+        <nav class="pagination" aria-label="Phân trang đơn hàng">
             <c:choose>
                 <c:when test="${result.hasPrevious}">
-                    <a href="${ctx}/orders?page=${result.previousPage}${filterQuery}">Trang trÆ°á»›c</a>
+                    <a href="${ctx}/orders?page=${result.previousPage}${filterQuery}">Trang trước</a>
                 </c:when>
-                <c:otherwise><span class="disabled">Trang trÆ°á»›c</span></c:otherwise>
+                <c:otherwise><span class="disabled">Trang trước</span></c:otherwise>
             </c:choose>
 
             <c:forEach var="i" begin="1" end="${result.totalPages}">
