@@ -1,80 +1,57 @@
-/* =====================================================================
-   ĐỔI TRẠNG THÁI ĐƠN HÀNG NGAY TRONG DATABASE
-   Sinh viên: Trần Minh Thọ - MSSV: 24133059
-
-   Đề bài yêu cầu "vào database để thay đổi các trạng thái để quan sát
-   trạng thái đơn thay đổi theo trạng thái tương ứng". File này gom sẵn
-   các câu lệnh đó, chỉ cần sửa số đơn rồi chạy, sau đó F5 lại trang
-   "Đơn hàng của tôi" trên web là thấy đơn nhảy sang tab mới.
-
-   08 trạng thái và nhãn hiển thị tương ứng trên giao diện:
-
-       NEW         ->  Đơn hàng mới
-       CONFIRMED   ->  Đã xác nhận
-       PREPARING   ->  Chuẩn bị hàng
-       SHIPPING    ->  Vận chuyển
-       DELIVERING  ->  Giao hàng
-       DELIVERED   ->  Đã giao
-       CANCELLED   ->  Đơn hàng hủy
-       RETURNED    ->  Đơn hàng hoàn
-   ===================================================================== */
-
+/* Đổi trạng thái qua database để kiểm tra 8 bộ lọc.
+   Trần Minh Thọ - 24133059. Chạy sau 03_order_schema.sql.
+   Sửa @orderId và @newStatus bên dưới; mặc định NULL nên không đổi đơn nào.
+   Dùng đơn mới đặt qua web hoặc mẫu từ 05_seed_orders.sql bản hiện tại.
+   NEW / CONFIRMED / PREPARING / SHIPPING / DELIVERING / DELIVERED:
+   đơn giữ số lượng đã trừ kho. CANCELLED / RETURNED: trả lại kho.
+   Chạy lại cùng trạng thái không trừ/trả kho thêm lần nữa. */
 USE BookStore;
 GO
-
-/* --- 1. Xem các đơn đang có, để biết order_id cần sửa --------------- */
-SELECT o.order_id,
-       u.email,
-       o.order_date,
-       o.status,
-       o.total_amount,
-       (SELECT COUNT(*) FROM order_detail d WHERE d.order_id = o.order_id) AS so_dong
-FROM orders o
-JOIN users u ON u.id = o.userid
+SELECT o.order_id, u.email, o.order_date, o.status, o.total_amount
+FROM orders o JOIN users u ON u.id = o.userid
 ORDER BY o.order_id DESC;
 GO
 
-/* --- 2. Đổi trạng thái MỘT đơn: sửa số 1 thành order_id cần đổi ----- */
--- UPDATE orders SET status = 'CONFIRMED'  WHERE order_id = 1;   -- Đã xác nhận
--- UPDATE orders SET status = 'PREPARING'  WHERE order_id = 1;   -- Chuẩn bị hàng
--- UPDATE orders SET status = 'SHIPPING'   WHERE order_id = 1;   -- Vận chuyển
--- UPDATE orders SET status = 'DELIVERING' WHERE order_id = 1;   -- Giao hàng
--- UPDATE orders SET status = 'DELIVERED'  WHERE order_id = 1;   -- Đã giao
--- UPDATE orders SET status = 'CANCELLED'  WHERE order_id = 1;   -- Đơn hàng hủy
--- UPDATE orders SET status = 'RETURNED'   WHERE order_id = 1;   -- Đơn hàng hoàn
--- UPDATE orders SET status = 'NEW'        WHERE order_id = 1;   -- Đơn hàng mới
+DECLARE @orderId INT = NULL; -- Điền mã đơn của mình, ví dụ 1.
+DECLARE @newStatus VARCHAR(12) = 'CONFIRMED'; -- Chọn một mã trong 8 mã ở trên.
 
-/* --- 3. Rải mỗi đơn một trạng thái khác nhau để xem đủ 8 bộ lọc -----
-   Chạy khối này khi đã đặt từ 8 đơn trở lên: nó gán lần lượt 8 trạng
-   thái cho 8 đơn mới nhất của tài khoản user@bookstore.local.         */
-/*
-WITH don AS (
-    SELECT o.order_id,
-           ROW_NUMBER() OVER (ORDER BY o.order_id DESC) AS thu_tu
-    FROM orders o
-    JOIN users u ON u.id = o.userid
-    WHERE u.email = 'user@bookstore.local'
-)
-UPDATE o
-SET o.status = CASE d.thu_tu
-        WHEN 1 THEN 'NEW'
-        WHEN 2 THEN 'CONFIRMED'
-        WHEN 3 THEN 'PREPARING'
-        WHEN 4 THEN 'SHIPPING'
-        WHEN 5 THEN 'DELIVERING'
-        WHEN 6 THEN 'DELIVERED'
-        WHEN 7 THEN 'CANCELLED'
-        WHEN 8 THEN 'RETURNED'
-        ELSE o.status
-    END
-FROM orders o
-JOIN don d ON d.order_id = o.order_id
-WHERE d.thu_tu <= 8;
-*/
-
-/* --- 4. Đếm số đơn theo từng trạng thái ----------------------------- */
-SELECT status, COUNT(*) AS so_don
-FROM orders
-GROUP BY status
-ORDER BY status;
+IF @orderId IS NOT NULL
+BEGIN
+    SET XACT_ABORT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        IF @newStatus NOT IN ('NEW','CONFIRMED','PREPARING','SHIPPING','DELIVERING','DELIVERED','CANCELLED','RETURNED')
+            THROW 50001, 'Ma trang thai khong hop le.', 1;
+        DECLARE @oldStatus VARCHAR(12);
+        SELECT @oldStatus = status FROM orders WITH (UPDLOCK, ROWLOCK) WHERE order_id = @orderId;
+        IF @oldStatus IS NULL THROW 50002, 'Khong tim thay don hang.', 1;
+        IF @oldStatus NOT IN ('CANCELLED','RETURNED') AND @newStatus IN ('CANCELLED','RETURNED')
+        BEGIN
+            UPDATE b SET b.quantity = ISNULL(b.quantity,0) + d.quantity
+            FROM books b JOIN (
+                SELECT bookid, SUM(quantity) AS quantity FROM order_detail
+                WHERE order_id = @orderId AND bookid IS NOT NULL GROUP BY bookid
+            ) d ON d.bookid = b.bookid;
+        END;
+        IF @oldStatus IN ('CANCELLED','RETURNED') AND @newStatus NOT IN ('CANCELLED','RETURNED')
+        BEGIN
+            DECLARE @lines INT = (SELECT COUNT(DISTINCT bookid) FROM order_detail WHERE order_id = @orderId);
+            UPDATE b SET b.quantity = b.quantity - d.quantity
+            FROM books b JOIN (
+                SELECT bookid, SUM(quantity) AS quantity FROM order_detail
+                WHERE order_id = @orderId AND bookid IS NOT NULL GROUP BY bookid
+            ) d ON d.bookid = b.bookid WHERE b.quantity >= d.quantity;
+            IF @@ROWCOUNT <> @lines THROW 50003, 'Khong du ton kho de khoi phuc don.', 1;
+        END;
+        UPDATE orders SET status = @newStatus WHERE order_id = @orderId;
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
+END;
 GO
+SELECT status, COUNT(*) AS so_don FROM orders GROUP BY status ORDER BY status;
+GO
+-- F5 trang Đơn hàng của tôi để quan sát nhãn, bộ lọc và tiến trình mới.

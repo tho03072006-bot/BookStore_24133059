@@ -30,6 +30,15 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>security</filter-name>
+        <filter-class>edu.hcmute.webpr.filter.SecurityFilter_24133059</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>security</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- 2) CÂU 1 - SiteMesh: đọc WEB-INF/sitemesh3.xml để biết trang nào được
             bọc bằng decorator nào (user.jsp cho User, admin.jsp cho Admin).
 
@@ -79,6 +88,7 @@
     <session-config>
         <!-- 30 phút không thao tác thì Session hết hạn. -->
         <session-timeout>30</session-timeout>
+        <cookie-config><http-only>true</http-only></cookie-config>
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 

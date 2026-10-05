@@ -76,6 +76,7 @@
                         <%-- Xóa gửi bằng POST + hỏi xác nhận để tránh xóa nhầm --%>
                         <form method="post" action="${ctx}/admin/books/delete"
                               style="display:inline" data-confirm-delete>
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                             <input type="hidden" name="id" value="${b.bookId}">
                             <input type="hidden" name="page" value="${result.currentPage}">
                             <button type="submit" class="btn small danger">Xóa</button>

@@ -20,12 +20,12 @@
 
 <%-- -------------------------- Bộ lọc trạng thái -------------------------- --%>
 <nav class="status-filter" aria-label="Lọc đơn hàng theo trạng thái">
-    <a href="${ctx}/orders" class="chip ${empty currentStatus ? 'active' : ''}">
+    <a href="${ctx}/orders" class="chip ${empty currentStatus ? 'active' : ''}" aria-current="${empty currentStatus ? 'page' : 'false'}">
         Tất cả <span class="chip-count">${totalAll}</span>
     </a>
     <c:forEach var="st" items="${statuses}">
         <a href="${ctx}/orders?status=${st.code}"
-           class="chip st-${st.code} ${currentStatus eq st ? 'active' : ''}">
+           class="chip st-${st.code} ${currentStatus eq st ? 'active' : ''}" aria-current="${currentStatus eq st ? 'page' : 'false'}">
             ${st.label}
             <span class="chip-count">${empty counts[st.code] ? 0 : counts[st.code]}</span>
         </a>

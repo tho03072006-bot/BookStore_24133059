@@ -18,34 +18,37 @@
     <h1>Kích hoạt tài khoản</h1>
 
     <c:if test="${not empty error}">
-        <div class="alert error"><c:out value="${error}"/></div>
+        <div class="alert error" role="alert" tabindex="-1" data-error-summary><c:out value="${error}"/></div>
     </c:if>
 
     <div class="alert info">
-        Mã OTP gồm 6 chữ số đã được gửi tới
+        Mã OTP gồm 6 chữ số để kích hoạt tài khoản
         <strong><c:out value="${pending.email}"/></strong>
         và có hiệu lực trong ${otpExpiryMinutes} phút.
-        <c:if test="${not mailConfigured}">
-            <br>Chưa cấu hình SMTP nên mã được in ở Console của Tomcat.
+        <c:if test="${not pending.emailSent}">
+            <br>Chế độ demo: xem mã trong Console của máy chủ.
         </c:if>
     </div>
 
     <div class="card">
         <form method="post" action="${ctx}/verify-otp">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
             <div class="form-row">
                 <label for="otp">Mã OTP</label>
                 <input type="text" id="otp" name="otp" required autofocus
-                       inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+                       autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
                        placeholder="123456"
                        style="letter-spacing:6px;font-size:20px;text-align:center;">
             </div>
 
             <div class="actions">
                 <button type="submit" class="btn">Xác nhận</button>
-                <a class="btn secondary" href="${ctx}/resend-otp">Gửi lại mã</a>
+
                 <a class="btn secondary" href="${ctx}/register">Nhập lại thông tin</a>
             </div>
         </form>
+        <form method="post" action="${ctx}/resend-otp">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}"><button class="btn secondary" type="submit">Gửi lại mã</button><p class="hint">Có thể gửi lại sau 60 giây.</p></form>
     </div>
 </div>
 

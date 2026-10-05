@@ -14,6 +14,7 @@ import java.util.Map;
 
 import edu.hcmute.webpr.model.Author_24133059;
 import edu.hcmute.webpr.model.Book_24133059;
+import edu.hcmute.webpr.model.BookFilter_24133059;
 
 /**
  * TẦNG DATA ACCESS - hiện thực truy xuất bảng {@code books} bằng JDBC thuần.
@@ -99,6 +100,61 @@ public class BookDao_24133059 implements IBookDao_24133059 {
     }
 
     // CÂU 4 - chi tiết 01 cuốn sách
+
+    private String searchWhere(BookFilter_24133059 filter) {
+        String where = " WHERE 1 = 1";
+        if (!filter.getQuery().isEmpty()) {
+            where += " AND (b.title LIKE ? ESCAPE '~' OR CAST(b.isbn AS VARCHAR(20)) LIKE ? ESCAPE '~'"
+                    + " OR EXISTS (SELECT 1 FROM book_author ba JOIN author a ON a.author_id = ba.author_id"
+                    + " WHERE ba.bookid = b.bookid AND a.author_name LIKE ? ESCAPE '~'))";
+        }
+        if (filter.getAuthorId() != null) {
+            where += " AND EXISTS (SELECT 1 FROM book_author ba WHERE ba.bookid = b.bookid AND ba.author_id = ?)";
+        }
+        if (filter.isInStock()) where += " AND b.quantity > 0";
+        return where;
+    }
+
+    private int bindSearch(PreparedStatement ps, BookFilter_24133059 filter) throws SQLException {
+        int i = 1;
+        if (!filter.getQuery().isEmpty()) {
+            // Tìm văn bản literal, không cho %, _ hoặc [ trở thành wildcard SQL.
+            String pattern = "%" + filter.getQuery().replace("~", "~~").replace("%", "~%")
+                    .replace("_", "~_").replace("[", "~[") + "%";
+            for (int n = 0; n < 3; n++) ps.setNString(i++, pattern);
+        }
+        if (filter.getAuthorId() != null) ps.setInt(i++, filter.getAuthorId());
+        return i;
+    }
+
+    @Override
+    public int countSearch(BookFilter_24133059 filter) {
+        try (Connection conn = jdbc.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM books b" + searchWhere(filter))) {
+            bindSearch(ps, filter);
+            try (ResultSet rs = ps.executeQuery()) { return rs.next() ? rs.getInt(1) : 0; }
+        } catch (SQLException e) { throw new RuntimeException("Lỗi khi đếm kết quả tìm sách", e); }
+    }
+
+    @Override
+    public List<Book_24133059> search(BookFilter_24133059 filter, int offset, int limit) {
+        String order = switch (filter.getSort()) {
+            case "price_asc" -> "b.price ASC, b.bookid DESC";
+            case "price_desc" -> "b.price DESC, b.bookid DESC";
+            case "title" -> "b.title ASC, b.bookid DESC";
+            default -> "b.bookid DESC";
+        };
+        String sql = "SELECT " + SELECT_COLUMNS + " FROM books b" + searchWhere(filter)
+                + " ORDER BY " + order + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (Connection conn = jdbc.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = bindSearch(ps, filter);
+            ps.setInt(i++, Math.max(offset, 0));
+            ps.setInt(i, Math.max(limit, 1));
+            List<Book_24133059> books = readList(ps);
+            attachAuthors(conn, books);
+            return books;
+        } catch (SQLException e) { throw new RuntimeException("Lỗi khi tìm sách", e); }
+    }
 
     @Override
     public Book_24133059 findById(int bookId) {

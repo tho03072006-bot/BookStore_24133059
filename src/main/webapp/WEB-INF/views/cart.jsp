@@ -67,12 +67,13 @@
                             <div class="hint">Còn ${item.stock} cuốn trong kho</div>
                         </td>
 
-                        <td>${item.priceText}</td>
+                        <td data-label="Đơn giá">${item.priceText}</td>
 
-                        <td>
+                        <td data-label="Số lượng">
                             <%-- SỬA SỐ LƯỢNG: ô nhập bị chặn trong khoảng 1..giới hạn
                                  ngay trên trình duyệt, tầng Service kiểm tra lại lần nữa. --%>
                             <form class="qty-form" method="post" action="${ctx}/cart/update">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                                 <input type="hidden" name="bookId" value="${item.bookId}">
                                 <label class="sr-only" for="qty-${item.bookId}">
                                     Số lượng của <c:out value="${item.title}"/>
@@ -84,10 +85,11 @@
                             <div class="hint">Tối đa ${gioiHan} cuốn</div>
                         </td>
 
-                        <td><strong>${item.subtotalText}</strong></td>
+                        <td data-label="Thành tiền"><strong>${item.subtotalText}</strong></td>
 
                         <td>
                             <form method="post" action="${ctx}/cart/remove" data-confirm-remove>
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                                 <input type="hidden" name="bookId" value="${item.bookId}">
                                 <button type="submit" class="btn small danger">Xóa</button>
                             </form>
@@ -108,6 +110,7 @@
 
             <div class="actions">
                 <form method="post" action="${ctx}/cart/clear" data-confirm-clear>
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                     <button type="submit" class="btn secondary">Xóa toàn bộ giỏ</button>
                 </form>
                 <a class="btn" href="${ctx}/checkout">Thanh toán COD &raquo;</a>

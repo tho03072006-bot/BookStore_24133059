@@ -3,6 +3,7 @@ package edu.hcmute.webpr.service;
 import java.util.List;
 
 import edu.hcmute.webpr.model.AuthorBooks_24133059;
+import edu.hcmute.webpr.model.BookFilter_24133059;
 import edu.hcmute.webpr.model.Book_24133059;
 import edu.hcmute.webpr.model.PageResult_24133059;
 
@@ -24,6 +25,8 @@ public interface IBookService_24133059 {
 
     /** Trang "Sản phẩm": toàn bộ sách, có phân trang. */
     PageResult_24133059<Book_24133059> listAll(int page, int pageSize);
+
+    PageResult_24133059<Book_24133059> search(BookFilter_24133059 filter, int page, int pageSize);
 
     /** CÂU 4: chi tiết 01 cuốn sách. */
     Book_24133059 findById(int bookId);

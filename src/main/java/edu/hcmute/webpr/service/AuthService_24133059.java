@@ -39,7 +39,7 @@ public class AuthService_24133059 implements IAuthService_24133059 {
             throw new IllegalArgumentException("Email không hợp lệ.");
         }
         if (mail.length() > 50) {
-            throw new IllegalArgumentException("Email tối đa 50 ký tự (cột email varchar(50)).");
+            throw new IllegalArgumentException("Email tối đa 50 ký tự.");
         }
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Họ tên không được để trống.");
@@ -115,17 +115,23 @@ public class AuthService_24133059 implements IAuthService_24133059 {
     }
 
     /**
-     * Gửi mã OTP. Nếu SMTP chưa cấu hình hoặc gửi lỗi (máy không có mạng) thì
-     * in mã ra Console của Tomcat để vẫn demo được luồng kích hoạt, đồng thời
-     * không làm hỏng thao tác đăng ký của người dùng.
+     * Chỉ in OTP trong chế độ demo. Khi SMTP đã cấu hình, lỗi gửi được báo lại
+     * cho người dùng, không làm lộ mã trong log.
      */
     private void deliverOtp(PendingRegistration_24133059 pending) {
+        if (!MailUtil_24133059.isConfigured()) {
+            pending.setEmailSent(false);
+            System.err.println("[OTP-DEMO] Ma OTP cho " + pending.getEmail() + " la: " + pending.getOtp());
+            return;
+        }
         try {
             MailUtil_24133059.sendOtp(pending.getEmail(), pending.getOtp());
+            pending.setEmailSent(true);
             System.out.println("[OTP] Da gui ma OTP toi " + pending.getEmail());
         } catch (MessagingException e) {
-            System.err.println("[OTP] Khong gui duoc email (" + e.getMessage()
-                    + "). Ma OTP cho " + pending.getEmail() + " la: " + pending.getOtp());
+            pending.setEmailSent(false);
+            System.err.println("[OTP] SMTP khong gui duoc email: " + e.getClass().getSimpleName());
+            throw new IllegalArgumentException("Chưa gửi được mã kích hoạt. Vui lòng thử lại sau.");
         }
     }
 
@@ -137,18 +143,11 @@ public class AuthService_24133059 implements IAuthService_24133059 {
         if (phoneRaw.isEmpty()) {
             return null;
         }
-        String digits = phoneRaw.replaceAll("\\D", "");
-        if (digits.startsWith("0")) {
-            digits = digits.substring(1);
+        String digits = phoneRaw.replaceAll("[\\s.-]", "");
+        if (!digits.matches("0[0-9]{9}")) {
+            throw new IllegalArgumentException("Số điện thoại cần gồm 10 chữ số, bắt đầu bằng 0.");
         }
-        if (digits.isEmpty()) {
-            return null;
-        }
-        if (digits.length() > 9) {
-            throw new IllegalArgumentException(
-                    "Số điện thoại quá dài (cột phone kiểu int chỉ chứa được 9 chữ số sau số 0).");
-        }
-        return Integer.valueOf(digits);
+        return Integer.valueOf(digits.substring(1));
     }
 
     private String trim(String value) {

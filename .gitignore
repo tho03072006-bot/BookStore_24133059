@@ -12,3 +12,6 @@
 .vscode/
 Thumbs.db
 desktop.ini
+
+# Cấu hình SMTP riêng của máy, không đóng gói vào WAR
+/config/*.local.properties

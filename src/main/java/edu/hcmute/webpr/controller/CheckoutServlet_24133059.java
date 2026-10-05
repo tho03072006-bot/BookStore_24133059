@@ -95,12 +95,21 @@ public class CheckoutServlet_24133059 extends HttpServlet {
 
         } catch (IllegalArgumentException e) {
             req.setAttribute("error", e.getMessage());
+            req.setAttribute("errorField", fieldForError(e.getMessage()));
             req.setAttribute("receiverName", receiverName);
             req.setAttribute("receiverPhone", receiverPhone);
             req.setAttribute("address", address);
             req.setAttribute("note", note);
             forwardToForm(req, resp, cart);
         }
+    }
+
+    private String fieldForError(String message) {
+        if (message.contains("người nhận")) return "receiverName";
+        if (message.startsWith("Số điện thoại")) return "receiverPhone";
+        if (message.contains("địa chỉ") || message.startsWith("Địa chỉ")) return "address";
+        if (message.startsWith("Ghi chú")) return "note";
+        return "";
     }
 
     private void forwardToForm(HttpServletRequest req, HttpServletResponse resp,

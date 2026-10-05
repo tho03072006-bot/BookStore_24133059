@@ -28,6 +28,13 @@ public class PendingRegistration_24133059 implements Serializable {
     private String otp;
     private LocalDateTime otpCreatedAt;
     private int attempts;
+    private boolean emailSent;
+
+    public boolean isEmailSent() { return emailSent; }
+    public void setEmailSent(boolean emailSent) { this.emailSent = emailSent; }
+    public boolean canResend() {
+        return !otpCreatedAt.plusSeconds(60).isAfter(LocalDateTime.now());
+    }
 
     public PendingRegistration_24133059(String email, String fullname, Integer phone,
                                         String hashedPassword, String otp) {

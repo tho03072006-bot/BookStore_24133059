@@ -186,6 +186,25 @@ class TestShopping_24133059 {
         assertTrue(cart.isEmpty());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"null", "-1.00"})
+    void missingOrNegativePriceCannotBeBoughtOrKeptInCart(String price) {
+        carts.addToCart(cart, 1, 1);
+        book.setPrice(price.equals("null") ? null : new BigDecimal(price));
+        assertThrows(IllegalArgumentException.class, () -> carts.updateQuantity(cart, 1, 2));
+        assertNotNull(carts.refresh(cart));
+        assertTrue(cart.isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> carts.addToCart(cart, 1, 1));
+        verifyNoInteractions(orders);
+    }
+
+    @Test
+    void explicitlyFreeBookHasZeroTotal() {
+        book.setPrice(BigDecimal.ZERO);
+        carts.addToCart(cart, 1, 1);
+        assertEquals(0, cart.getTotalAmount().signum());
+    }
+
     private int placeOrder() {
         return checkout.placeCodOrder(buyer, cart, "Nguyễn Văn An", "0912345678", "1 Võ Văn Ngân", "");
     }

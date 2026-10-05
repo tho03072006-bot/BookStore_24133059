@@ -17,9 +17,6 @@
 USE BookStore;
 GO
 
-IF OBJECT_ID('order_detail', 'U') IS NOT NULL DROP TABLE order_detail;
-IF OBJECT_ID('orders', 'U') IS NOT NULL DROP TABLE orders;
-GO
 
 /* ---------------------------------------------------------------------
    Bảng orders - mỗi dòng là một đơn hàng.
@@ -40,6 +37,8 @@ GO
    mọi giá trị lạ. Xem file 04_order_status_demo.sql để biết câu lệnh
    đổi trạng thái sẵn dùng.
    --------------------------------------------------------------------- */
+IF OBJECT_ID('dbo.orders', 'U') IS NULL
+BEGIN
 CREATE TABLE orders (
     order_id       INT IDENTITY(1,1) NOT NULL,
     userid         INT               NOT NULL,
@@ -60,9 +59,8 @@ CREATE TABLE orders (
     CONSTRAINT CK_orders_payment CHECK (payment_method IN ('COD')),
     CONSTRAINT CK_orders_total CHECK (total_amount >= 0)
 );
-GO
-
 CREATE INDEX IX_orders_user_status ON orders (userid, status);
+END;
 GO
 
 /* ---------------------------------------------------------------------
@@ -77,6 +75,8 @@ GO
    thì dòng hoá đơn vẫn còn, chỉ mất đường dẫn sang trang chi tiết. Nếu
    dùng ON DELETE CASCADE thì xoá sách sẽ làm bay luôn lịch sử mua hàng.
    --------------------------------------------------------------------- */
+IF OBJECT_ID('dbo.order_detail', 'U') IS NULL
+BEGIN
 CREATE TABLE order_detail (
     detail_id INT IDENTITY(1,1) NOT NULL,
     order_id  INT               NOT NULL,
@@ -92,9 +92,8 @@ CREATE TABLE order_detail (
     CONSTRAINT CK_od_quantity CHECK (quantity > 0),
     CONSTRAINT CK_od_price CHECK (price >= 0)
 );
-GO
-
 CREATE INDEX IX_order_detail_order ON order_detail (order_id);
+END;
 GO
 
 PRINT 'Da tao xong 2 bang moi: orders, order_detail.';

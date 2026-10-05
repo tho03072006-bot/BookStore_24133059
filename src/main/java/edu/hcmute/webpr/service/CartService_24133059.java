@@ -40,6 +40,7 @@ public class CartService_24133059 implements ICartService_24133059 {
         if (book == null) {
             throw new IllegalArgumentException("Cuốn sách này không còn tồn tại.");
         }
+        requirePrice(book);
 
         CartItem_24133059 item = cart.find(bookId);
         long newQuantity = (item == null) ? quantity : (long) item.getQuantity() + quantity;
@@ -78,6 +79,7 @@ public class CartService_24133059 implements ICartService_24133059 {
             cart.remove(bookId);
             throw new IllegalArgumentException("Cuốn sách này không còn tồn tại, đã bỏ khỏi giỏ.");
         }
+        requirePrice(book);
 
         int limit = limitOf(book);
         if (quantity > limit) {
@@ -123,6 +125,11 @@ public class CartService_24133059 implements ICartService_24133059 {
                 notes.add("\"" + item.getTitle() + "\" không còn bán nên đã được bỏ khỏi giỏ");
                 continue;
             }
+            if (book.getPrice() == null || book.getPrice().signum() < 0) {
+                cart.remove(item.getBookId());
+                notes.add("\"" + item.getTitle() + "\" chưa có giá hợp lệ nên đã được bỏ khỏi giỏ");
+                continue;
+            }
 
             int limit = limitOf(book);
             if (limit <= 0) {
@@ -150,5 +157,11 @@ public class CartService_24133059 implements ICartService_24133059 {
     private int limitOf(Book_24133059 book) {
         int stock = (book.getQuantity() == null) ? 0 : book.getQuantity();
         return Math.min(stock, Constants_24133059.CART_MAX_QUANTITY_PER_BOOK);
+    }
+
+    private void requirePrice(Book_24133059 book) {
+        if (book.getPrice() == null || book.getPrice().signum() < 0) {
+            throw new IllegalArgumentException("Sách \"" + book.getTitle() + "\" chưa có giá hợp lệ để đặt hàng.");
+        }
     }
 }

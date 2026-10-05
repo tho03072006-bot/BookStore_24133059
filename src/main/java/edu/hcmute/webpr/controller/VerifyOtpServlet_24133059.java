@@ -50,28 +50,39 @@ public class VerifyOtpServlet_24133059 extends HttpServlet {
             return;
         }
 
-        if (pending.isExpired()) {
-            req.setAttribute("error", "Mã OTP đã hết hạn. Bấm \"Gửi lại mã\" để nhận mã mới.");
-            forwardToForm(req, resp);
-            return;
-        }
+        synchronized (pending) {
+            if (readPending(req) != pending) {
+                resp.sendRedirect(req.getContextPath() + "/login");
+                return;
+            }
+            if (pending.getAttempts() >= 5) {
+                req.setAttribute("error", "Bạn đã nhập sai 5 lần. Vui lòng gửi lại mã để tiếp tục.");
+                forwardToForm(req, resp);
+                return;
+            }
+            if (pending.isExpired()) {
+                req.setAttribute("error", "Mã OTP đã hết hạn. Bấm \"Gửi lại mã\" để nhận mã mới.");
+                forwardToForm(req, resp);
+                return;
+            }
 
-        if (!pending.verify(req.getParameter("otp"))) {
-            req.setAttribute("error", "Mã OTP không đúng. Bạn đã nhập sai "
-                    + pending.getAttempts() + " lần.");
-            forwardToForm(req, resp);
-            return;
-        }
+            if (!pending.verify(req.getParameter("otp"))) {
+                req.setAttribute("error", "Mã OTP không đúng. Bạn đã nhập sai "
+                        + pending.getAttempts() + " lần.");
+                forwardToForm(req, resp);
+                return;
+            }
 
-        try {
-            authService.completeRegistration(pending);
-        } catch (IllegalArgumentException e) {
-            req.setAttribute("error", e.getMessage());
-            forwardToForm(req, resp);
-            return;
-        }
+            try {
+                authService.completeRegistration(pending);
+            } catch (IllegalArgumentException e) {
+                req.setAttribute("error", e.getMessage());
+                forwardToForm(req, resp);
+                return;
+            }
 
-        req.getSession().removeAttribute(Constants_24133059.SESSION_PENDING);
+            req.getSession().removeAttribute(Constants_24133059.SESSION_PENDING);
+        }
         ServletUtil_24133059.flash(req, "flashSuccess",
                 "Kích hoạt tài khoản thành công! Mời bạn đăng nhập.");
         resp.sendRedirect(req.getContextPath() + "/login");

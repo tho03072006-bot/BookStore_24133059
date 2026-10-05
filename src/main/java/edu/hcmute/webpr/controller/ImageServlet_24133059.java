@@ -5,6 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.InvalidPathException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.Locale;
 
 import edu.hcmute.webpr.util.Constants_24133059;
@@ -48,11 +52,20 @@ public class ImageServlet_24133059 extends HttpServlet {
         }
 
         // Chỉ giữ lại tên file: chặn kiểu "../../web.xml" đọc trộm file hệ thống.
-        String safeName = Path.of(name).getFileName().toString();
+        String safeName;
+        try {
+            Path fileName = Path.of(name).getFileName();
+            if (fileName == null) { resp.sendError(404); return; }
+            safeName = fileName.toString();
+        } catch (InvalidPathException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         resp.setContentType(guessContentType(safeName));
 
         Path uploaded = Path.of(Constants_24133059.UPLOAD_DIR, safeName);
-        if (Files.isReadable(uploaded)) {
+        if (Files.isRegularFile(uploaded) && Files.isReadable(uploaded)) {
+            if (cached(req, resp, safeName, Files.getLastModifiedTime(uploaded).toMillis(), Files.size(uploaded))) return;
             resp.setContentLengthLong(Files.size(uploaded));
             try (OutputStream out = resp.getOutputStream()) {
                 Files.copy(uploaded, out);
@@ -61,15 +74,30 @@ public class ImageServlet_24133059 extends HttpServlet {
         }
 
         String inWebapp = Constants_24133059.COVER_DIR_IN_WEBAPP + safeName;
-        try (InputStream in = getServletContext().getResourceAsStream(inWebapp)) {
-            if (in == null) {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
+        URL resource = getServletContext().getResource(inWebapp);
+        if (resource == null) { resp.sendError(HttpServletResponse.SC_NOT_FOUND); return; }
+        URLConnection connection = resource.openConnection();
+        if (cached(req, resp, safeName, connection.getLastModified(), connection.getContentLengthLong())) return;
+        if (connection.getContentLengthLong() >= 0) resp.setContentLengthLong(connection.getContentLengthLong());
+        try (InputStream in = connection.getInputStream()) {
             try (OutputStream out = resp.getOutputStream()) {
                 in.transferTo(out);
             }
         }
+    }
+
+    private boolean cached(HttpServletRequest req, HttpServletResponse resp, String name, long modified, long size) {
+        String etag = "W/\"" + Integer.toHexString(name.hashCode()) + "-" + modified + "-" + size + "\"";
+        resp.setHeader("Cache-Control", "public, max-age=3600");
+        resp.setHeader("ETag", etag);
+        if (modified > 0) resp.setDateHeader("Last-Modified", modified);
+        String candidates = req.getHeader("If-None-Match");
+        if (candidates != null && Arrays.stream(candidates.split(",")).map(String::trim)
+                .anyMatch(value -> value.equals(etag) || value.equals("*"))) {
+            resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return true;
+        }
+        return false;
     }
 
     private String guessContentType(String fileName) {

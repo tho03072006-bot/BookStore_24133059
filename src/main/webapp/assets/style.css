@@ -593,8 +593,9 @@ body { line-height: 1.6; -webkit-font-smoothing: antialiased; }
 a { color: #87301f; }
 a:focus-visible, button:focus-visible, input:focus-visible,
 select:focus-visible, textarea:focus-visible {
-    outline: 3px solid #f0aa75;
+    outline: 3px solid #87301f;
     outline-offset: 3px;
+    box-shadow: 0 0 0 6px #fff;
 }
 
 .site-header {
@@ -1044,6 +1045,63 @@ input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="
 
 .order-line-money {
     white-space: nowrap;
+}
+
+/* Cải thiện thao tác bàn phím, form và bố cục trên điện thoại. */
+.skip-link { position: absolute; top: -80px; left: 14px; z-index: 10; padding: 12px 18px; background: #fff; }
+.skip-link:focus { top: 8px; }
+input[type=tel], input[type=search] {
+    width: 100%; min-height: 44px; padding: 9px 11px; border: 1px solid #b8b3ac;
+    border-radius: 8px; font: inherit; background: var(--trang);
+}
+.btn, .btn.small, .chip, .pagination a, .pagination span, .main-menu a { min-height: 44px; }
+.main-menu button { font: inherit; padding: 8px 14px; min-height: 44px; border-radius: 10px; cursor: pointer; }
+.main-menu form { margin: 0; }
+.catalog-filter { display: grid; grid-template-columns: minmax(180px, 2fr) minmax(150px, 1fr) minmax(150px, 1fr); gap: 12px 18px; }
+.catalog-filter .form-row { margin: 0; min-width: 0; }
+.search-actions { grid-column: 1 / -1; }
+.inline-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0 auto 0 0; cursor: pointer; }
+.inline-check input { width: 20px; height: 20px; accent-color: var(--xanh); }
+.field-error:empty { display: none; }
+.payment-fieldset { border: 0; padding: 0; margin: 0 0 14px; min-width: 0; }
+.payment-fieldset legend { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+.checkout-grid table { table-layout: fixed; overflow-wrap: anywhere; }
+.checkout-grid table.data th { white-space: normal; }
+.checkout-grid table.data td:last-child { font-variant-numeric: tabular-nums; }
+input[type=text], input[type=email], input[type=password], input[type=number],
+input[type=date], input[type=file], select, textarea { min-height: 44px; }
+.alert.success { position: sticky; top: 12px; z-index: 2; }
+.password-toggle { margin-top: 8px; }
+.empty-state { text-align: center; padding-block: 32px; }
+.cart-table td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+.order-line-title, .book-card .title, .field-list { min-width: 0; overflow-wrap: anywhere; }
+.book-cover { animation: none; }
+@media (max-width: 640px) {
+    .site-header nav { width: 100%; }
+    .main-menu .user-chip { max-width: calc(100% - 110px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .catalog-filter { grid-template-columns: 1fr; }
+    .search-actions { grid-column: auto; }
+    .cart-table, .cart-table tbody, .cart-table tr, .cart-table td { display: block; }
+    .cart-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .cart-table tr { padding: 14px; border-bottom: 2px solid var(--vien); }
+    .cart-table td { padding: 7px 0; border: 0; white-space: normal; }
+    .cart-table td[data-label]::before { content: attr(data-label) ": "; font-weight: 600; color: var(--chu-mo); }
+    .cart-table .qty-form { flex-wrap: wrap; }
+    .order-lines li { flex-wrap: wrap; }
+    .order-line-title { flex: 1 1 160px; }
+    .timeline { flex-direction: column; gap: 8px; }
+    .timeline li { flex: auto; padding: 0 0 0 30px; text-align: left; min-height: 30px; }
+    .timeline .dot { left: 8px; top: 5px; }
+    .timeline li::before { left: 0; top: -15px; width: 3px; height: 30px; }
+    .receipt-table, .receipt-table tbody, .receipt-table tfoot, .receipt-table tr,
+    .receipt-table td, .receipt-table th { display: block; }
+    .receipt-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .receipt-table tbody tr { padding: 10px 0; border-bottom: 1px solid var(--vien); }
+    table.data.receipt-table tbody td { border: 0; padding: 3px 0; }
+    .receipt-table tbody td:first-child { font-weight: 600; }
+    .receipt-table td[data-label]::before { content: attr(data-label) ": "; color: var(--chu-mo); }
+    .receipt-table tfoot tr { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    table.data.receipt-table tfoot th, table.data.receipt-table tfoot td { border: 0; padding: 8px 6px; }
 }
 
 .order-foot {

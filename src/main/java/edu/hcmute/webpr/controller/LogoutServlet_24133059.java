@@ -20,6 +20,11 @@ public class LogoutServlet_24133059 extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.sendRedirect(req.getContextPath() + "/home");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         HttpSession session = req.getSession(false);
         if (session != null) {

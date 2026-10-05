@@ -27,6 +27,11 @@ public class ResendOtpServlet_24133059 extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.sendRedirect(req.getContextPath() + "/verify-otp");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         HttpSession session = req.getSession(false);
         Object attr = (session == null) ? null
@@ -37,9 +42,20 @@ public class ResendOtpServlet_24133059 extends HttpServlet {
             return;
         }
 
-        authService.resendOtp(pending);
-        ServletUtil_24133059.flash(req, "flashSuccess",
-                "Đã gửi lại mã OTP tới " + pending.getEmail() + ".");
+        synchronized (pending) {
+            if (pending.canResend()) {
+                try {
+                    authService.resendOtp(pending);
+                    ServletUtil_24133059.flash(req, "flashSuccess", pending.isEmailSent()
+                            ? "Đã gửi lại mã OTP tới " + pending.getEmail() + "."
+                            : "Mã mới đã được tạo trong chế độ demo. Xem Console của máy chủ.");
+                } catch (IllegalArgumentException e) {
+                    ServletUtil_24133059.flash(req, "flashError", e.getMessage());
+                }
+            } else {
+                ServletUtil_24133059.flash(req, "flashError", "Vui lòng chờ 60 giây trước khi gửi lại mã.");
+            }
+        }
         resp.sendRedirect(req.getContextPath() + "/verify-otp");
     }
 }

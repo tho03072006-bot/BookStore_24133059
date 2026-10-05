@@ -18,59 +18,57 @@
     <h1>Đăng ký tài khoản</h1>
 
     <c:if test="${not empty error}">
-        <div class="alert error"><c:out value="${error}"/></div>
+        <div class="alert error" role="alert" tabindex="-1" data-error-summary><c:out value="${error}"/></div>
     </c:if>
 
     <c:if test="${not mailConfigured}">
         <div class="alert info">
-            Máy chủ SMTP chưa được cấu hình trong
-            <code>src/main/resources/email.properties</code> nên mã OTP sẽ được
-            in ra Console của Tomcat thay vì gửi qua email.
+            Chế độ demo: mã kích hoạt được xem trong Console của máy chủ.
         </div>
     </c:if>
 
     <div class="card">
         <form method="post" action="${ctx}/register">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
 
             <div class="form-row">
                 <label for="email">Email <span class="muted">(dùng để nhận mã OTP)</span></label>
-                <input type="email" id="email" name="email" required autofocus maxlength="50"
-                       aria-invalid="${errorField eq 'email'}"
+                <input type="email" id="email" autocomplete="email" name="email" required autofocus maxlength="50"
+                       aria-invalid="${errorField eq 'email'}" aria-describedby="email-error"
                        value="<c:out value='${email}'/>" placeholder="ban@example.com">
-                <c:if test="${errorField eq 'email'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+                <div class="field-error" id="email-error"><c:if test="${errorField eq 'email'}"><c:out value="${error}"/></c:if></div>
             </div>
 
             <div class="form-row">
                 <label for="fullname">Họ và tên</label>
-                <input type="text" id="fullname" name="fullname" required maxlength="50"
-                       aria-invalid="${errorField eq 'fullname'}"
+                <input type="text" id="fullname" autocomplete="name" name="fullname" required maxlength="50"
+                       aria-invalid="${errorField eq 'fullname'}" aria-describedby="fullname-error"
                        value="<c:out value='${fullname}'/>" placeholder="Nguyễn Văn A">
-                <c:if test="${errorField eq 'fullname'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+                <div class="field-error" id="fullname-error"><c:if test="${errorField eq 'fullname'}"><c:out value="${error}"/></c:if></div>
             </div>
 
             <div class="form-row">
                 <label for="phone">Số điện thoại</label>
-                <input type="text" id="phone" name="phone" maxlength="11"
-                       aria-invalid="${errorField eq 'phone'}"
+                <input type="tel" inputmode="tel" autocomplete="tel" id="phone" name="phone" maxlength="20"
+                       aria-invalid="${errorField eq 'phone'}" aria-describedby="phone-error"
                        value="<c:out value='${phone}'/>" placeholder="0912345678">
-                <c:if test="${errorField eq 'phone'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
-                <div class="hint">Cột phone trong database kiểu int nên số 0 đứng
-                    đầu sẽ được lược bỏ khi lưu.</div>
+                <div class="field-error" id="phone-error"><c:if test="${errorField eq 'phone'}"><c:out value="${error}"/></c:if></div>
+                <div class="hint">Không bắt buộc. Nhập 10 chữ số, bắt đầu bằng 0.</div>
             </div>
 
             <div class="form-grid">
                 <div class="form-row">
                     <label for="password">Mật khẩu</label>
-                    <input type="password" id="password" name="password" required minlength="6"
-                           aria-invalid="${errorField eq 'password'}">
-                    <c:if test="${errorField eq 'password'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+                    <input type="password" id="password" autocomplete="new-password" name="password" required minlength="6"
+                           aria-invalid="${errorField eq 'password'}" aria-describedby="password-error">
+                    <div class="field-error" id="password-error"><c:if test="${errorField eq 'password'}"><c:out value="${error}"/></c:if></div>
                 </div>
                 <div class="form-row">
                     <label for="confirmPassword">Nhập lại mật khẩu</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword"
-                           aria-invalid="${errorField eq 'confirmPassword'}"
+                    <input type="password" id="confirmPassword" autocomplete="new-password" name="confirmPassword"
+                           aria-invalid="${errorField eq 'confirmPassword'}" aria-describedby="confirmPassword-error"
                            required minlength="6">
-                    <c:if test="${errorField eq 'confirmPassword'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+                    <div class="field-error" id="confirmPassword-error"><c:if test="${errorField eq 'confirmPassword'}"><c:out value="${error}"/></c:if></div>
                 </div>
             </div>
 

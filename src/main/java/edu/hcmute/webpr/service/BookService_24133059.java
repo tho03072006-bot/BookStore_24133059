@@ -9,6 +9,7 @@ import edu.hcmute.webpr.dao.IAuthorDao_24133059;
 import edu.hcmute.webpr.dao.IBookDao_24133059;
 import edu.hcmute.webpr.model.Author_24133059;
 import edu.hcmute.webpr.model.AuthorBooks_24133059;
+import edu.hcmute.webpr.model.BookFilter_24133059;
 import edu.hcmute.webpr.model.Book_24133059;
 import edu.hcmute.webpr.model.PageResult_24133059;
 import edu.hcmute.webpr.util.Constants_24133059;
@@ -58,6 +59,15 @@ public class BookService_24133059 implements IBookService_24133059 {
     @Override
     public Book_24133059 findById(int bookId) {
         return bookDao.findById(bookId);
+    }
+
+    @Override
+    public PageResult_24133059<Book_24133059> search(BookFilter_24133059 filter, int page, int pageSize) {
+        int size = Math.min(Math.max(pageSize, 1), 50);
+        int total = bookDao.countSearch(filter);
+        int current = normalizePage(page, total, size);
+        return new PageResult_24133059<>(bookDao.search(filter, (current - 1) * size, size),
+                current, size, total);
     }
 
     // CÂU 6 - CRUD

@@ -15,12 +15,11 @@
 <div class="card" style="max-width:640px;margin:0 auto;">
     <h1>Rất tiếc, đã xảy ra lỗi</h1>
 
-    <p>
-        Mã lỗi: <strong>${requestScope['jakarta.servlet.error.status_code']}</strong>
-    </p>
-    <c:if test="${not empty requestScope['jakarta.servlet.error.message']}">
-        <p class="muted"><c:out value="${requestScope['jakarta.servlet.error.message']}"/></p>
-    </c:if>
+    <p role="alert"><c:choose>
+        <c:when test="${not empty securityError}"><c:out value="${securityError}"/></c:when>
+        <c:when test="${requestScope['jakarta.servlet.error.status_code'] eq 404}">Trang bạn yêu cầu không tồn tại.</c:when>
+        <c:otherwise>Máy chủ chưa xử lý được yêu cầu. Vui lòng thử lại sau.</c:otherwise>
+    </c:choose></p>
 
     <div class="actions">
         <a class="btn" href="${ctx}/home">Về trang chủ</a>

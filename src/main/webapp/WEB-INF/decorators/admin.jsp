@@ -15,15 +15,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><sitemesh:write property='title'/> &ndash; Quản trị BookStore 24133059</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/style.css?v=6">
-    <script src="${pageContext.request.contextPath}/assets/app.js" defer></script>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/style.css?v=7">
+    <script src="${pageContext.request.contextPath}/assets/app.js?v=7" defer></script>
     <sitemesh:write property='head'/>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Bỏ qua menu, đến nội dung</a>
 
 <%@ include file="_header.jsp" %>
 
-<main>
+<main id="main-content" tabindex="-1">
     <div class="container">
 
         <div class="card" style="padding:12px 18px;">

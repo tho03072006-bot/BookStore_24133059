@@ -52,7 +52,7 @@ public class CartAddServlet_24133059 extends HttpServlet {
      */
     private String backTo(HttpServletRequest req) {
         String returnUrl = ServletUtil_24133059.stringParam(req, "returnUrl");
-        if (returnUrl.startsWith("/") && !returnUrl.startsWith("//")) {
+        if (returnUrl.matches("^/(home|products|book|cart)([?#][^\\r\\n\\\\]*)?$")) {
             return req.getContextPath() + returnUrl;
         }
         return req.getContextPath() + "/cart";

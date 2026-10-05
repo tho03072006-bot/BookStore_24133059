@@ -1,29 +1,10 @@
-# =====================================================================
-# CẤU HÌNH GỬI EMAIL - dùng cho mã OTP kích hoạt tài khoản (Câu 2).
-#
-# File THẬT tên là email.properties, nằm cùng thư mục này và đã được
-# .gitignore nên không lên GitHub (vì chứa mật khẩu).
-# Cách dùng: chép file này thành email.properties rồi điền giá trị.
-#
-# Để trống cũng không sao: chương trình vẫn chạy bình thường, mã OTP sẽ
-# được IN RA CONSOLE của Tomcat thay vì gửi qua email.
-#
-# CÁCH LẤY mail.password NẾU DÙNG GMAIL:
-#   1. Vào https://myaccount.google.com/security
-#   2. Bật "Xác minh 2 bước" - bắt buộc, không bật thì Google không cho
-#      tạo App Password.
-#   3. Vào mục "Mật khẩu ứng dụng" (App passwords).
-#   4. Tạo mật khẩu mới (ứng dụng "Mail", thiết bị "Other" -> đặt tên tuỳ ý),
-#      Google trả về chuỗi 16 ký tự. Dán chuỗi đó vào mail.password.
-#   5. KHÔNG dùng mật khẩu Gmail thường - Gmail sẽ từ chối kết nối SMTP.
-# =====================================================================
-
+# Chép vào config/email.local.properties (đã được Git bỏ qua).
+# Đặt BOOKSTORE_EMAIL_CONFIG tới đường dẫn tuyệt đối của file trước khi chạy Tomcat.
+# Hoặc dùng BOOKSTORE_MAIL_USER, BOOKSTORE_MAIL_PASSWORD, BOOKSTORE_MAIL_FROM.
+# Gmail cần App Password. Không commit mật khẩu vào repository.
+# Để trống SMTP hoặc đặt BOOKSTORE_MAIL_MODE=console: OTP in ra Console để demo.
 mail.smtp.host=smtp.gmail.com
 mail.smtp.port=587
-
-# Địa chỉ Gmail dùng để GỬI mã OTP đi
 mail.from=
 mail.username=
-
-# App Password 16 ký tự lấy theo hướng dẫn phía trên
 mail.password=

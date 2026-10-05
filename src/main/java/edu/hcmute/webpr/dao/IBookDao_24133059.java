@@ -3,6 +3,7 @@ package edu.hcmute.webpr.dao;
 import java.util.List;
 
 import edu.hcmute.webpr.model.Book_24133059;
+import edu.hcmute.webpr.model.BookFilter_24133059;
 
 /**
  * TẦNG DATA ACCESS - hợp đồng truy xuất bảng {@code books}.
@@ -21,6 +22,10 @@ public interface IBookDao_24133059 {
     List<Book_24133059> findAll(int offset, int limit);
 
     int countAll();
+
+    List<Book_24133059> search(BookFilter_24133059 filter, int offset, int limit);
+
+    int countSearch(BookFilter_24133059 filter);
 
     /** Câu 4: chi tiết 01 cuốn sách (kèm tác giả, số review, điểm trung bình). */
     Book_24133059 findById(int bookId);

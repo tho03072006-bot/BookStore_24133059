@@ -7,7 +7,7 @@
         Tác giả : Author_name
         [cover_image]   [cover_image]   [cover_image]
         Tiêu đề / Mã isbn / Tác giả / Publisher / Publisher_date /
-        Quantity / Review (n)
+        Quantity / Đánh giá (n)
         Trang trước – 1 2 3 4 – Trang sau
 
     Đề số 02 - Trần Minh Thọ - 24133059
@@ -31,7 +31,7 @@
         <code>database/02_seed.sql</code>.</div>
 </c:if>
 
-<c:forEach var="section" items="${sections}">
+<c:forEach var="section" items="${sections}" varStatus="sectionIndex">
     <c:set var="author" value="${section.author}"/>
     <c:set var="page" value="${section.page}"/>
 
@@ -60,7 +60,7 @@
                                     <c:param name="name" value="${b.coverImage}"/>
                                 </c:url>
                                 <img class="book-cover" src="${coverUrl}"
-                                     loading="lazy" decoding="async" width="400" height="600"
+                                     loading="${sectionIndex.first ? 'eager' : 'lazy'}" decoding="async" width="400" height="600"
                                      alt="Bìa sách <c:out value='${b.title}'/>">
                             </c:when>
                             <c:otherwise>
@@ -79,20 +79,21 @@
                     <div class="field-list">
                         <div><span class="label">Mã isbn:</span> <c:out value="${b.isbn}"/></div>
                         <div><span class="label">Tác giả:</span> <c:out value="${b.authorNames}"/></div>
-                        <div><span class="label">Publisher:</span> <c:out value="${b.publisher}"/></div>
-                        <div><span class="label">Publisher_date:</span> ${b.publishDateText}</div>
-                        <div><span class="label">Quantity:</span> <c:out value="${b.quantity}"/></div>
+                        <div><span class="label">Nhà xuất bản:</span> <c:out value="${b.publisher}"/></div>
+                        <div><span class="label">Ngày xuất bản:</span> ${b.publishDateText}</div>
+                        <div><span class="label">Còn trong kho:</span> <c:out value="${b.quantity}"/></div>
                     </div>
 
                     <a class="review-count" href="${ctx}/book?id=${b.bookId}#reviews">
-                        Review (${b.reviewCount})
+                        Đánh giá (${b.reviewCount})
                     </a>
 
                     <%-- GIỎ HÀNG: thêm nhanh 1 cuốn, xong quay lại đúng khối
                          tác giả và đúng trang đang xem --%>
                     <c:choose>
-                        <c:when test="${b.quantity gt 0}">
+                        <c:when test="${b.quantity gt 0 and not empty b.price and b.price ge 0}">
                             <form method="post" action="${ctx}/cart/add" class="add-to-cart">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                                 <input type="hidden" name="bookId" value="${b.bookId}">
                                 <input type="hidden" name="quantity" value="1">
                                 <input type="hidden" name="returnUrl"
@@ -101,7 +102,7 @@
                             </form>
                         </c:when>
                         <c:otherwise>
-                            <span class="btn small secondary" aria-disabled="true">Hết hàng</span>
+                            <span class="btn small secondary" aria-disabled="true">${empty b.price or b.price lt 0 ? 'Chưa niêm giá' : 'Hết hàng'}</span>
                         </c:otherwise>
                     </c:choose>
                 </article>

@@ -18,12 +18,13 @@
     <h1>Đăng nhập</h1>
 
     <c:if test="${not empty error}">
-        <div class="alert error"><c:out value="${error}"/></div>
+        <div class="alert error" role="alert" tabindex="-1" data-error-summary><c:out value="${error}"/></div>
     </c:if>
 
     <div class="card">
         <%-- Giữ lại tham số back để sau khi đăng nhập quay về đúng cuốn sách --%>
         <form method="post" action="${ctx}/login">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
             <c:if test="${not empty param.back}">
                 <input type="hidden" name="back" value="<c:out value='${param.back}'/>">
             </c:if>
@@ -35,13 +36,13 @@
 
             <div class="form-row">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" required autofocus
+                <input type="email" id="email" name="email" autocomplete="username" maxlength="50" required autofocus
                        value="<c:out value='${email}'/>" placeholder="ban@example.com">
             </div>
 
             <div class="form-row">
                 <label for="password">Mật khẩu</label>
-                <input type="password" id="password" name="password" required
+                <input type="password" id="password" name="password" autocomplete="current-password" required
                        placeholder="Nhập mật khẩu">
             </div>
 

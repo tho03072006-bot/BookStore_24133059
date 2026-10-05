@@ -46,7 +46,7 @@
                 <c:forEach var="ma" items="${luong}" varStatus="vs">
                     <c:forEach var="st" items="${statuses}">
                         <c:if test="${st.code eq ma}">
-                            <li class="${vs.index le viTri ? 'done' : ''} ${vs.index eq viTri ? 'current' : ''}">
+                            <li aria-current="${vs.index eq viTri ? 'step' : 'false'}" class="${vs.index le viTri ? 'done' : ''} ${vs.index eq viTri ? 'current' : ''}">
                                 <span class="dot" aria-hidden="true"></span>
                                 <span class="timeline-label">${st.label}</span>
                             </li>
@@ -61,7 +61,7 @@
 <div class="checkout-grid">
     <div class="card">
         <h2>Sách đã đặt</h2>
-        <table class="data">
+        <table class="data receipt-table">
             <thead>
             <tr>
                 <th scope="col">Sách</th>
@@ -86,9 +86,9 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-                    <td>${d.priceText}</td>
-                    <td>${d.quantity}</td>
-                    <td>${d.subtotalText}</td>
+                    <td data-label="Đơn giá">${d.priceText}</td>
+                    <td data-label="Số lượng">${d.quantity}</td>
+                    <td data-label="Thành tiền">${d.subtotalText}</td>
                 </tr>
             </c:forEach>
             </tbody>
@@ -117,6 +117,7 @@
         <c:if test="${order.status.cancellable}">
             <div class="actions" style="margin-top:16px;">
                 <form method="post" action="${ctx}/orders/cancel" data-confirm-cancel>
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                     <input type="hidden" name="id" value="${order.orderId}">
                     <button type="submit" class="btn danger">Hủy đơn hàng</button>
                 </form>

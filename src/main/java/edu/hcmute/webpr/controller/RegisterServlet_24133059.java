@@ -44,6 +44,11 @@ public class RegisterServlet_24133059 extends HttpServlet {
         String phone = ServletUtil_24133059.stringParam(req, "phone");
 
         try {
+            Object previous = req.getSession().getAttribute(Constants_24133059.SESSION_PENDING);
+            if (previous instanceof PendingRegistration_24133059 p
+                    && p.getEmail().equalsIgnoreCase(email) && !p.canResend()) {
+                throw new IllegalArgumentException("Vui lòng chờ 60 giây trước khi yêu cầu mã mới.");
+            }
             PendingRegistration_24133059 pending = authService.startRegistration(
                     email, fullname, phone,
                     req.getParameter("password"), req.getParameter("confirmPassword"));

@@ -3,6 +3,8 @@ package edu.hcmute.webpr.controller;
 import java.io.IOException;
 
 import edu.hcmute.webpr.model.Book_24133059;
+import edu.hcmute.webpr.model.BookFilter_24133059;
+import edu.hcmute.webpr.service.AuthorService_24133059;
 import edu.hcmute.webpr.model.PageResult_24133059;
 import edu.hcmute.webpr.service.BookService_24133059;
 import edu.hcmute.webpr.service.IBookService_24133059;
@@ -32,10 +34,15 @@ public class ProductServlet_24133059 extends HttpServlet {
             throws ServletException, IOException {
 
         int page = ServletUtil_24133059.intParam(req, "page", 1);
+        BookFilter_24133059 filter = new BookFilter_24133059(req.getParameter("q"),
+                ServletUtil_24133059.optionalIntParam(req, "author"), req.getParameter("sort"),
+                "1".equals(req.getParameter("stock")));
         PageResult_24133059<Book_24133059> result =
-                bookService.listAll(page, Constants_24133059.PRODUCT_PAGE_SIZE);
+                bookService.search(filter, page, Constants_24133059.PRODUCT_PAGE_SIZE);
 
         req.setAttribute("result", result);
+        req.setAttribute("filter", filter);
+        req.setAttribute("authors", new AuthorService_24133059().findAll());
         req.getRequestDispatcher("/WEB-INF/views/products.jsp").forward(req, resp);
     }
 }

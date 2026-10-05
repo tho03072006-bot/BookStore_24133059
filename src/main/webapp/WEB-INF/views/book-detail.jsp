@@ -53,9 +53,9 @@
                     <strong><c:out value="${book.title}"/></strong></div>
                 <div><span class="label">Mã isbn:</span> <c:out value="${book.isbn}"/></div>
                 <div><span class="label">Tác giả:</span> <c:out value="${book.authorNames}"/></div>
-                <div><span class="label">Publisher:</span> <c:out value="${book.publisher}"/></div>
-                <div><span class="label">Publisher_date:</span> ${book.publishDateText}</div>
-                <div><span class="label">Quantity:</span> <c:out value="${book.quantity}"/></div>
+                <div><span class="label">Nhà xuất bản:</span> <c:out value="${book.publisher}"/></div>
+                <div><span class="label">Ngày xuất bản:</span> ${book.publishDateText}</div>
+                <div><span class="label">Còn trong kho:</span> <c:out value="${book.quantity}"/></div>
                 <c:if test="${not empty book.price}">
                     <div><span class="label">Giá:</span> <strong class="price">${book.priceText}</strong></div>
                 </c:if>
@@ -81,8 +81,9 @@
             <%-- GIỎ HÀNG: chọn số lượng rồi thêm vào giỏ. Ô nhập chặn sẵn
                  trong khoảng 1..tồn kho, tầng Service kiểm tra lại lần nữa. --%>
             <c:choose>
-                <c:when test="${book.quantity gt 0}">
+                <c:when test="${book.quantity gt 0 and not empty book.price and book.price ge 0}">
                     <form method="post" action="${ctx}/cart/add" class="buy-box">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                         <input type="hidden" name="bookId" value="${book.bookId}">
                         <input type="hidden" name="returnUrl" value="/book?id=${book.bookId}">
 
@@ -96,7 +97,7 @@
                 </c:when>
                 <c:otherwise>
                     <div class="alert info" style="margin-top:16px;">
-                        Cuốn sách này hiện đã hết hàng.
+                        ${empty book.price or book.price lt 0 ? 'Cuốn sách này chưa niêm giá, chưa thể đặt hàng.' : 'Cuốn sách này hiện đã hết hàng.'}
                     </div>
                 </c:otherwise>
             </c:choose>
@@ -142,12 +143,12 @@
         <c:otherwise>
             <c:if test="${not empty myReview}">
                 <div class="alert info">
-                    Bạn đã nhận xét cuốn này rồi. Gửi lại sẽ CẬP NHẬT nhận xét cũ
-                    (khoá chính của bảng rating là cặp userid + bookid).
+                    Bạn đã đánh giá cuốn sách này. Gửi lại để cập nhật đánh giá của bạn.
                 </div>
             </c:if>
 
             <form method="post" action="${ctx}/review">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
                 <input type="hidden" name="bookId" value="${book.bookId}">
 
                 <div class="form-row" style="max-width:260px;">
@@ -169,7 +170,7 @@
                               required><c:out value="${myReview.reviewText}"/></textarea>
                 </div>
 
-                <button type="submit" class="btn">Submit</button>
+                <button type="submit" class="btn">Gửi đánh giá</button>
             </form>
         </c:otherwise>
     </c:choose>

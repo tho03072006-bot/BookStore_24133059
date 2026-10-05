@@ -3,6 +3,8 @@ package edu.hcmute.webpr.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import jakarta.mail.Authenticator;
@@ -17,10 +19,9 @@ import jakarta.mail.internet.MimeMessage;
 /**
  * CÂU 2: gửi mã OTP kích hoạt tài khoản qua email (Jakarta Mail + SMTP).
  *
- * Cấu hình SMTP đọc từ {@code src/main/resources/email.properties} chứ không
- * hard-code trong code. Nếu thiếu file cấu hình hoặc SMTP lỗi, hàm gửi sẽ ném
- * MessagingException để Servlet bắt và in mã OTP ra Console - nhờ vậy vẫn demo
- * được luồng đăng ký khi máy không có mạng.
+ * Cấu hình mẫu trong classpath; tài khoản thật đọc từ biến môi trường hoặc
+ * BOOKSTORE_EMAIL_CONFIG (file ngoài WAR). Chế độ console chỉ dành cho demo.
+ * SMTP đã cấu hình nhưng gửi lỗi thì không đưa mã thật vào log.
  *
  * Đề số 02 - Trần Minh Thọ - 24133059
  */
@@ -47,11 +48,33 @@ public final class MailUtil_24133059 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        String external = System.getenv("BOOKSTORE_EMAIL_CONFIG");
+        String tomcatBase = System.getProperty("catalina.base");
+        if ((external == null || external.isBlank()) && tomcatBase != null) {
+            Path local = Path.of(tomcatBase, "conf", "bookstore-email.properties");
+            if (Files.isRegularFile(local)) external = local.toString();
+        }
+        if (external != null && !external.isBlank()) {
+            try (InputStream in = Files.newInputStream(Path.of(external))) {
+                props.load(in);
+            } catch (IOException e) {
+                throw new IllegalStateException("Khong doc duoc file cau hinh SMTP rieng", e);
+            }
+        }
+        override(props, "mail.username", "BOOKSTORE_MAIL_USER");
+        override(props, "mail.password", "BOOKSTORE_MAIL_PASSWORD");
+        override(props, "mail.from", "BOOKSTORE_MAIL_FROM");
         return props;
+    }
+
+    private static void override(Properties props, String key, String env) {
+        String value = System.getenv(env);
+        if (value != null) props.setProperty(key, value);
     }
 
     /** Có đủ tài khoản SMTP để gửi mail thật hay không. */
     public static boolean isConfigured() {
+        if ("console".equalsIgnoreCase(System.getenv("BOOKSTORE_MAIL_MODE"))) return false;
         String user = CONFIG.getProperty("mail.username", "").trim();
         String pass = CONFIG.getProperty("mail.password", "").trim();
         return !user.isEmpty() && !pass.isEmpty();
@@ -67,13 +90,18 @@ public final class MailUtil_24133059 {
         String port = CONFIG.getProperty("mail.smtp.port", "587");
         final String username = CONFIG.getProperty("mail.username", "").trim();
         final String password = CONFIG.getProperty("mail.password", "").trim();
-        String from = CONFIG.getProperty("mail.from", username).trim();
+        String from = CONFIG.getProperty("mail.from", "").trim();
+        if (from.isEmpty()) from = username;
 
         Properties smtp = new Properties();
         smtp.put("mail.smtp.host", host);
         smtp.put("mail.smtp.port", port);
         smtp.put("mail.smtp.auth", "true");
         smtp.put("mail.smtp.starttls.enable", "true");
+        smtp.put("mail.smtp.starttls.required", "true");
+        smtp.put("mail.smtp.connectiontimeout", "10000");
+        smtp.put("mail.smtp.timeout", "10000");
+        smtp.put("mail.smtp.writetimeout", "10000");
 
         Session session = Session.getInstance(smtp, new Authenticator() {
             @Override

@@ -28,6 +28,7 @@
     <%-- enctype multipart/form-data để gửi kèm được file ảnh bìa --%>
     <form method="post" enctype="multipart/form-data"
           action="${ctx}/admin/books/${isEdit ? 'edit' : 'add'}">
+                <input type="hidden" name="_csrf" value="${sessionScope.csrfToken}">
 
         <input type="hidden" name="bookId" value="${book.bookId}">
 
