@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="400" viewBox="0 0 280 400" role="img" aria-label="Còn Chút Gì Để Nhớ">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient></defs>
+  <rect width="280" height="400" fill="url(#g)"/>
+  <rect x="14" y="14" width="252" height="372" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="2"/>
+  <text x="140" y="0" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="700"><tspan x="140" y="133">Còn Chút Gì Để</tspan><tspan x="140" y="167">Nhớ</tspan></text>
+  <line x1="60" y1="300" x2="220" y2="300" stroke="#ffffff" stroke-opacity=".6" stroke-width="2"/>
+  <text x="140" y="330" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="16">Nguyễn Nhật Ánh</text>
+</svg>

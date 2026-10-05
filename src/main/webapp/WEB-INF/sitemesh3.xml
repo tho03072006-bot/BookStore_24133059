@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    CÂU 1 - Cấu hình SiteMesh Decorators cho 02 VAI TRÒ:
+
+      * /admin/*  -> admin.jsp : giao diện Trang quản trị (có thêm menu con)
+      * còn lại   -> user.jsp  : giao diện phía người dùng
+
+    Cả hai decorator đều có Header chứa menu Trang Chủ / Sản phẩm / Đăng nhập /
+    Trang quản trị (mục cuối chỉ hiện với admin) và Footer ghi Họ tên - MSSV -
+    Mã đề theo yêu cầu của đề.
+
+    Đề số 02 - Trần Minh Thọ - 24133059
+-->
+<sitemesh>
+
+    <decorator-prefix>/WEB-INF/decorators/</decorator-prefix>
+    <include-error-pages>true</include-error-pages>
+
+    <!-- Ảnh, CSS: để nguyên, không bọc decorator. -->
+    <mapping path="/assets/*" exclude="true"/>
+    <mapping path="/image" exclude="true"/>
+
+    <!-- Vai trò ADMIN -->
+    <mapping path="/admin/*" decorator="admin.jsp"/>
+
+    <!-- Vai trò USER -->
+    <mapping path="/*" decorator="user.jsp"/>
+
+</sitemesh>

@@ -1,0 +1,86 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%--
+    CÂU 2 - Trang ĐĂNG KÝ. Bấm "Đăng ký" chưa tạo tài khoản ngay mà gửi mã OTP
+    tới email vừa nhập; tài khoản chỉ được tạo sau khi nhập đúng mã.
+
+    Đề số 02 - Trần Minh Thọ - 24133059
+--%>
+<html>
+<head>
+    <title>Đăng ký</title>
+</head>
+<body>
+
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
+
+<div style="max-width:560px;margin:0 auto;">
+    <h1>Đăng ký tài khoản</h1>
+
+    <c:if test="${not empty error}">
+        <div class="alert error"><c:out value="${error}"/></div>
+    </c:if>
+
+    <c:if test="${not mailConfigured}">
+        <div class="alert info">
+            Máy chủ SMTP chưa được cấu hình trong
+            <code>src/main/resources/email.properties</code> nên mã OTP sẽ được
+            in ra Console của Tomcat thay vì gửi qua email.
+        </div>
+    </c:if>
+
+    <div class="card">
+        <form method="post" action="${ctx}/register">
+
+            <div class="form-row">
+                <label for="email">Email <span class="muted">(dùng để nhận mã OTP)</span></label>
+                <input type="email" id="email" name="email" required autofocus maxlength="50"
+                       aria-invalid="${errorField eq 'email'}"
+                       value="<c:out value='${email}'/>" placeholder="ban@example.com">
+                <c:if test="${errorField eq 'email'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+            </div>
+
+            <div class="form-row">
+                <label for="fullname">Họ và tên</label>
+                <input type="text" id="fullname" name="fullname" required maxlength="50"
+                       aria-invalid="${errorField eq 'fullname'}"
+                       value="<c:out value='${fullname}'/>" placeholder="Nguyễn Văn A">
+                <c:if test="${errorField eq 'fullname'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+            </div>
+
+            <div class="form-row">
+                <label for="phone">Số điện thoại</label>
+                <input type="text" id="phone" name="phone" maxlength="11"
+                       aria-invalid="${errorField eq 'phone'}"
+                       value="<c:out value='${phone}'/>" placeholder="0912345678">
+                <c:if test="${errorField eq 'phone'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+                <div class="hint">Cột phone trong database kiểu int nên số 0 đứng
+                    đầu sẽ được lược bỏ khi lưu.</div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-row">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" name="password" required minlength="6"
+                           aria-invalid="${errorField eq 'password'}">
+                    <c:if test="${errorField eq 'password'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+                </div>
+                <div class="form-row">
+                    <label for="confirmPassword">Nhập lại mật khẩu</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword"
+                           aria-invalid="${errorField eq 'confirmPassword'}"
+                           required minlength="6">
+                    <c:if test="${errorField eq 'confirmPassword'}"><div class="field-error" role="alert"><c:out value="${error}"/></div></c:if>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn">Đăng ký &amp; gửi mã OTP</button>
+                <a class="btn secondary" href="${ctx}/login">Đã có tài khoản? Đăng nhập</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Đề số 02 - Trần Minh Thọ - 24133059
+    web.xml chuẩn Jakarta EE 6.0, khớp với Tomcat v11.0.
+
+    Các Servlet đều khai báo URL bằng annotation @WebServlet ngay trong class
+    Java nên file này chỉ cấu hình những thứ không annotation hoá được:
+    welcome-file, thứ tự các Filter, session và trang lỗi.
+-->
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>BookStore_24133059</display-name>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- 1) UTF-8 phải đặt TRƯỚC mọi filter khác, nếu không tiếng Việt trong
+            form POST đã bị đọc sai trước khi tới đây. -->
+    <filter>
+        <filter-name>encoding</filter-name>
+        <filter-class>edu.hcmute.webpr.filter.EncodingFilter_24133059</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>encoding</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- 2) CÂU 1 - SiteMesh: đọc WEB-INF/sitemesh3.xml để biết trang nào được
+            bọc bằng decorator nào (user.jsp cho User, admin.jsp cho Admin).
+
+            LƯU Ý VỀ <dispatcher>: filter này CỐ Ý chỉ chạy ở FORWARD và ERROR,
+            không chạy ở REQUEST. Lý do: mọi trang của bài đều do Servlet xử lý
+            rồi mới forward sang JSP trong /WEB-INF/views. Trên Tomcat 10/11,
+            khi lệnh forward đó kết thúc thì response bị đánh dấu "đã gửi xong",
+            mọi thứ ghi thêm sau đó đều bị bỏ đi. Nếu để SiteMesh chạy ở REQUEST
+            (tức là bọc bên NGOÀI lần forward) thì nó chỉ ghép được trang sau khi
+            forward đã kết thúc -> trình duyệt nhận HTTP 200 nhưng dài 0 byte,
+            tức là trang trắng. Đặt ở FORWARD nghĩa là SiteMesh chạy BÊN TRONG
+            lần forward, ghép xong và ghi ra response trước khi forward kết thúc.
+            ERROR để trang báo lỗi cũng có header/footer như các trang khác. -->
+    <filter>
+        <filter-name>sitemesh</filter-name>
+        <filter-class>edu.hcmute.webpr.filter.TomcatSiteMeshFilter_24133059</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>sitemesh</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+
+    <!-- 3) Bảo vệ khu vực quản trị: chỉ tài khoản is_admin = 1 mới vào được. -->
+    <filter>
+        <filter-name>auth</filter-name>
+        <filter-class>edu.hcmute.webpr.filter.AuthFilter_24133059</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>auth</filter-name>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Ép Jasper đọc MỌI file .jsp bằng UTF-8.
+         Cần thiết vì hai file _header.jsp và _footer.jsp được nhúng tĩnh bằng
+         <%@ include %> nên không có chỉ thị <%@ page pageEncoding %> của riêng
+         chúng; thiếu khai báo này Jasper đọc chúng theo ISO-8859-1 và chữ tiếng
+         Việt trên menu, footer bị lỗi font. -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
+
+    <session-config>
+        <!-- 30 phút không thao tác thì Session hết hạn. -->
+        <session-timeout>30</session-timeout>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/views/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/views/error.jsp</location>
+    </error-page>
+
+</web-app>

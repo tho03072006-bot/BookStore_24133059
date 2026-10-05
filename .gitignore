@@ -1,0 +1,18 @@
+# Kết quả build
+/target/
+*.war
+*.class
+
+# Cấu hình SMTP thật: chứa App Password của Gmail, KHÔNG đưa lên GitHub.
+# Xem src/main/resources/email.properties.example để biết cách tạo file này.
+src/main/resources/email.properties
+
+# Rác của IDE và hệ điều hành
+.settings/
+.classpath
+.project
+.idea/
+*.iml
+.vscode/
+Thumbs.db
+desktop.ini
